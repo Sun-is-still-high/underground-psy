@@ -7,7 +7,11 @@ DirectoryIndex index.php index.html
 # Включить URL Rewriting
 RewriteEngine On
 
-# Перенаправляем все запросы на index.php, кроме существующих файлов и директорий
+# Разрешить доступ к статическим файлам (CSS, JS, изображения)
+RewriteCond %{REQUEST_URI} ^/public/
+RewriteRule ^(.*)$ - [L]
+
+# Перенаправляем все остальные запросы на index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]

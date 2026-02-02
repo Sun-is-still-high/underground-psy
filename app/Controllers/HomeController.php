@@ -26,4 +26,12 @@ class HomeController extends Controller
             'user' => $user
         ]);
     }
+
+    /**
+     * Страница "О проекте"
+     */
+    public function about(): void
+    {
+        $this->view('about');
+    }
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Underground Psy' ?></title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body>
     <!-- Шапка -->
@@ -14,6 +14,7 @@
                 <a href="/" class="logo">Underground Psy</a>
 
                 <nav class="nav">
+                    <a href="/about" class="nav-link">О проекте</a>
                     <?php if (\Core\Session::isAuthenticated()): ?>
                         <a href="/dashboard" class="nav-link">Личный кабинет</a>
                         <form action="/logout" method="POST" style="display: inline;">

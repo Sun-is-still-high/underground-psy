@@ -6,6 +6,7 @@
 return [
     // Главная страница
     ['method' => 'GET', 'uri' => '/', 'action' => 'HomeController@index'],
+    ['method' => 'GET', 'uri' => '/about', 'action' => 'HomeController@about'],
 
     // Аутентификация - страницы
     ['method' => 'GET', 'uri' => '/login', 'action' => 'AuthController@loginPage'],
