@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Перенаправляем все запросы на index.php, кроме существующих файлов и директорий
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
