@@ -41,14 +41,14 @@ ob_start();
                 <h2>Мои действия</h2>
                 <div class="action-cards">
                     <div class="action-card">
-                        <h3>Найти психолога</h3>
-                        <p>Поиск специалистов по методам терапии</p>
-                        <a href="/psychologists" class="btn btn-primary">Перейти к поиску</a>
+                        <h3>Создать запрос</h3>
+                        <p>Опишите проблему - психологи откликнутся</p>
+                        <a href="/client/cases/create" class="btn btn-primary">Создать запрос</a>
                     </div>
                     <div class="action-card">
-                        <h3>Мои сеансы</h3>
-                        <p>Просмотр забронированных консультаций</p>
-                        <a href="/sessions" class="btn btn-outline">Мои записи</a>
+                        <h3>Мои запросы</h3>
+                        <p>Просмотр запросов и откликов</p>
+                        <a href="/client/cases" class="btn btn-outline">Перейти</a>
                     </div>
                 </div>
             </div>
@@ -57,22 +57,30 @@ ob_start();
                 <h2>Мои действия</h2>
                 <div class="action-cards">
                     <div class="action-card">
-                        <h3>Мое расписание</h3>
-                        <p>Управление слотами доступности</p>
-                        <a href="/schedule" class="btn btn-primary">Управление</a>
+                        <h3>Поиск кейсов</h3>
+                        <p>Найти клиентов по типу проблемы</p>
+                        <a href="/psychologist/cases" class="btn btn-primary">Найти кейсы</a>
                     </div>
                     <div class="action-card">
-                        <h3>Мои сеансы</h3>
-                        <p>Просмотр забронированных сеансов</p>
-                        <a href="/sessions" class="btn btn-outline">Мои клиенты</a>
+                        <h3>Мои интервизии</h3>
+                        <p>Статус посещения и группы</p>
+                        <a href="/psychologist/intervisions" class="btn btn-outline">Перейти</a>
+                    </div>
+                </div>
+            </div>
+        <?php elseif ($user['role'] === 'ADMIN'): ?>
+            <div class="dashboard-section">
+                <h2>Администрирование</h2>
+                <div class="action-cards">
+                    <div class="action-card">
+                        <h3>Интервизии</h3>
+                        <p>Управление группами и сессиями</p>
+                        <a href="/admin/intervision/groups" class="btn btn-primary">Управление</a>
                     </div>
                 </div>
             </div>
         <?php endif; ?>
 
-        <div class="dashboard-note">
-            <p><strong>Примечание:</strong> Функционал расписания и бронирования будет доступен в следующих версиях.</p>
-        </div>
     </div>
 </div>
 

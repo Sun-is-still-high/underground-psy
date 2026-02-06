@@ -111,3 +111,78 @@ CREATE TABLE IF NOT EXISTS intervision_settings (
 INSERT INTO intervision_settings (setting_key, setting_value, description) VALUES
 ('min_monthly_sessions', '2', 'Минимальное количество интервизий в месяц для права консультировать')
 ON DUPLICATE KEY UPDATE setting_key = setting_key;
+
+-- ============================================
+-- СИСТЕМА КЕЙСОВ (ПОИСК КЛИЕНТОВ)
+-- ============================================
+
+-- Справочник типов проблем
+CREATE TABLE IF NOT EXISTS problem_types (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_slug (slug),
+    INDEX idx_is_active (is_active),
+    INDEX idx_sort_order (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Предустановленные типы проблем
+INSERT INTO problem_types (name, slug, description, sort_order) VALUES
+('Тревога и панические атаки', 'anxiety', 'Тревожные расстройства, панические атаки, фобии', 1),
+('Депрессия', 'depression', 'Депрессивные состояния, апатия, потеря интереса к жизни', 2),
+('Зависимости', 'addiction', 'Алкогольная, наркотическая, игровая и другие зависимости', 3),
+('Отношения', 'relationships', 'Проблемы в отношениях, развод, одиночество', 4),
+('Самооценка', 'self-esteem', 'Низкая самооценка, неуверенность в себе', 5),
+('Травма и ПТСР', 'trauma', 'Посттравматическое стрессовое расстройство, психологические травмы', 6),
+('Горе и утрата', 'grief', 'Переживание потери близких', 7),
+('Стресс и выгорание', 'burnout', 'Профессиональное выгорание, хронический стресс', 8),
+('Расстройства пищевого поведения', 'eating-disorders', 'Анорексия, булимия, компульсивное переедание', 9),
+('Другое', 'other', 'Другие психологические проблемы', 100)
+ON DUPLICATE KEY UPDATE name = VALUES(name);
+
+-- Кейсы (запросы клиентов на помощь)
+CREATE TABLE IF NOT EXISTS cases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    problem_type_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    is_anonymous BOOLEAN DEFAULT FALSE,
+    status ENUM('OPEN', 'IN_PROGRESS', 'CLOSED', 'CANCELLED') DEFAULT 'OPEN',
+    budget_type ENUM('PAID', 'REVIEW', 'NEGOTIABLE') DEFAULT 'NEGOTIABLE',
+    budget_amount DECIMAL(10, 2) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    closed_at TIMESTAMP NULL,
+
+    FOREIGN KEY (client_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (problem_type_id) REFERENCES problem_types(id) ON DELETE RESTRICT,
+    INDEX idx_client_id (client_id),
+    INDEX idx_problem_type_id (problem_type_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Отклики психологов на кейсы
+CREATE TABLE IF NOT EXISTS case_responses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    case_id INT NOT NULL,
+    psychologist_id INT NOT NULL,
+    message TEXT NOT NULL,
+    proposed_price DECIMAL(10, 2) NULL,
+    status ENUM('PENDING', 'ACCEPTED', 'REJECTED') DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    responded_at TIMESTAMP NULL,
+
+    FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE,
+    FOREIGN KEY (psychologist_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_case_psychologist (case_id, psychologist_id),
+    INDEX idx_case_id (case_id),
+    INDEX idx_psychologist_id (psychologist_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

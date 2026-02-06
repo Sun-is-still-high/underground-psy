@@ -47,4 +47,17 @@ return [
 
     // ==================== ИНТЕРВИЗИИ (Психолог) ====================
     ['method' => 'GET', 'uri' => '/psychologist/intervisions', 'action' => 'DashboardController@intervisionStatus'],
+
+    // ==================== КЕЙСЫ (Клиент) ====================
+    ['method' => 'GET',  'uri' => '/client/cases', 'action' => 'CaseController@index'],
+    ['method' => 'GET',  'uri' => '/client/cases/create', 'action' => 'CaseController@create'],
+    ['method' => 'POST', 'uri' => '/client/cases', 'action' => 'CaseController@store'],
+    ['method' => 'GET',  'uri' => '/client/cases/{id}', 'action' => 'CaseController@show'],
+    ['method' => 'POST', 'uri' => '/client/cases/{id}/close', 'action' => 'CaseController@close'],
+    ['method' => 'POST', 'uri' => '/client/cases/{caseId}/accept/{responseId}', 'action' => 'CaseController@acceptResponse'],
+
+    // ==================== ПОИСК КЕЙСОВ (Психолог) ====================
+    ['method' => 'GET',  'uri' => '/psychologist/cases', 'action' => 'CaseSearchController@index'],
+    ['method' => 'GET',  'uri' => '/psychologist/cases/{id}', 'action' => 'CaseSearchController@show'],
+    ['method' => 'POST', 'uri' => '/psychologist/cases/{id}/respond', 'action' => 'CaseSearchController@respond'],
 ];
