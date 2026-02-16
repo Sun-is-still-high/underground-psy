@@ -14,6 +14,7 @@
                 <a href="/" class="logo">Underground Psy</a>
 
                 <nav class="nav">
+                    <a href="/psychologists" class="nav-link">Психологи</a>
                     <a href="/about" class="nav-link">О проекте</a>
                     <?php if (\Core\Session::isAuthenticated()): ?>
                         <a href="/dashboard" class="nav-link">Личный кабинет</a>

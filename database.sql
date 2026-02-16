@@ -186,3 +186,40 @@ CREATE TABLE IF NOT EXISTS case_responses (
     INDEX idx_psychologist_id (psychologist_id),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- ПРОФИЛИ ПСИХОЛОГОВ
+-- ============================================
+
+-- Профили психологов
+CREATE TABLE IF NOT EXISTS psychologist_profiles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    bio TEXT,
+    methods_description TEXT COMMENT 'Методы и подходы к работе',
+    education TEXT COMMENT 'Образование',
+    experience_description TEXT COMMENT 'Описание опыта работы',
+    hourly_rate_min DECIMAL(10, 2) NULL COMMENT 'Минимальная ставка в час',
+    hourly_rate_max DECIMAL(10, 2) NULL COMMENT 'Максимальная ставка в час',
+    is_published BOOLEAN DEFAULT FALSE COMMENT 'Опубликован ли профиль',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_profile (user_id),
+    INDEX idx_is_published (is_published)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Специализации психологов (связь с типами проблем)
+CREATE TABLE IF NOT EXISTS psychologist_specializations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    profile_id INT NOT NULL,
+    problem_type_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (profile_id) REFERENCES psychologist_profiles(id) ON DELETE CASCADE,
+    FOREIGN KEY (problem_type_id) REFERENCES problem_types(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_profile_problem (profile_id, problem_type_id),
+    INDEX idx_profile_id (profile_id),
+    INDEX idx_problem_type_id (problem_type_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

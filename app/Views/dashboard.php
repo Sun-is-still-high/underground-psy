@@ -36,6 +36,13 @@ ob_start();
             </div>
         </div>
 
+        <?php if (!empty($profileWarning)): ?>
+            <div class="alert alert-warning">
+                <?= htmlspecialchars($profileWarning) ?>
+                <a href="/psychologist/profile/edit" class="btn btn-primary btn-sm" style="margin-left: 1rem;">Заполнить профиль</a>
+            </div>
+        <?php endif; ?>
+
         <?php if ($user['role'] === 'CLIENT'): ?>
             <div class="dashboard-section">
                 <h2>Мои действия</h2>
@@ -57,9 +64,14 @@ ob_start();
                 <h2>Мои действия</h2>
                 <div class="action-cards">
                     <div class="action-card">
+                        <h3>Мой профиль</h3>
+                        <p>Заполните профиль для клиентов</p>
+                        <a href="/psychologist/profile/edit" class="btn btn-primary">Редактировать</a>
+                    </div>
+                    <div class="action-card">
                         <h3>Поиск кейсов</h3>
                         <p>Найти клиентов по типу проблемы</p>
-                        <a href="/psychologist/cases" class="btn btn-primary">Найти кейсы</a>
+                        <a href="/psychologist/cases" class="btn btn-outline">Найти кейсы</a>
                     </div>
                     <div class="action-card">
                         <h3>Мои интервизии</h3>

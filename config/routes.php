@@ -60,4 +60,14 @@ return [
     ['method' => 'GET',  'uri' => '/psychologist/cases', 'action' => 'CaseSearchController@index'],
     ['method' => 'GET',  'uri' => '/psychologist/cases/{id}', 'action' => 'CaseSearchController@show'],
     ['method' => 'POST', 'uri' => '/psychologist/cases/{id}/respond', 'action' => 'CaseSearchController@respond'],
+
+    // ==================== ПРОФИЛИ ПСИХОЛОГОВ ====================
+
+    // Редактирование профиля (должно быть ДО /psychologists/{id})
+    ['method' => 'GET',  'uri' => '/psychologist/profile/edit', 'action' => 'PsychologistController@editProfile'],
+    ['method' => 'POST', 'uri' => '/psychologist/profile/update', 'action' => 'PsychologistController@updateProfile'],
+
+    // Публичный каталог
+    ['method' => 'GET',  'uri' => '/psychologists', 'action' => 'PsychologistController@index'],
+    ['method' => 'GET',  'uri' => '/psychologists/{id}', 'action' => 'PsychologistController@show'],
 ];
