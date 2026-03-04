@@ -1,0 +1,1522 @@
+/* Сброс стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Основные стили */
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --text-color: #1f2937;
+    --text-light: #6b7280;
+    --bg-color: #f9fafb;
+    --white: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Контейнер */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Шапка */
+.header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+    box-shadow: var(--shadow);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Кнопки */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-lg {
+    padding: 0.75rem 2rem;
+    font-size: 1.125rem;
+}
+
+.btn-block {
+    width: 100%;
+    display: block;
+}
+
+/* Основной контент */
+.main {
+    flex: 1;
+    padding: 2rem 0;
+}
+
+/* Hero секция */
+.hero {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+}
+
+.welcome-box {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.welcome-box h2 {
+    margin-bottom: 1rem;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* Features */
+.features {
+    padding: 4rem 0;
+}
+
+.features h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.feature-card h3 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* Auth страницы */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.auth-card {
+    background: var(--white);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 450px;
+}
+
+.auth-card h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-control {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group small {
+    margin-top: 0.25rem;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    max-width: 1200px;
+}
+
+.alert-success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid var(--success-color);
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid var(--error-color);
+}
+
+.alert p {
+    margin: 0.25rem 0;
+}
+
+/* Dashboard */
+.dashboard {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.dashboard h1 {
+    margin-bottom: 2rem;
+}
+
+.user-info-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.user-info-card h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row .label {
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+.info-row .value {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.dashboard-section {
+    margin-top: 2rem;
+}
+
+.dashboard-section h2 {
+    margin-bottom: 1.5rem;
+}
+
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.action-card h3 {
+    margin-bottom: 0.5rem;
+}
+
+.action-card p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-note {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 2rem;
+    border: 1px solid #fbbf24;
+}
+
+/* Подвал */
+.footer {
+    background: var(--white);
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-top: auto;
+    text-align: center;
+    color: var(--text-light);
+}
+
+/* Страница "О проекте" */
+.about-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.about-page h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.about-section {
+    margin-bottom: 3rem;
+}
+
+.about-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.target-audience {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.audience-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.audience-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.audience-card ul {
+    margin-left: 1.5rem;
+    margin-top: 1rem;
+}
+
+.audience-card li {
+    margin-bottom: 0.5rem;
+}
+
+.highlight {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #fbbf24;
+    margin-top: 1rem;
+}
+
+.how-it-works {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.step {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.step-number {
+    background: var(--primary-color);
+    color: var(--white);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.quote {
+    background: #f3f4f6;
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    font-size: 1.125rem;
+    color: var(--text-color);
+}
+
+.principles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.principle-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.principle-card h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.conditions {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.condition {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.05rem;
+}
+
+.condition:last-child {
+    border-bottom: none;
+}
+
+.cta-section {
+    text-align: center;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+}
+
+.cta-section h2 {
+    color: var(--primary-color);
+}
+
+.final-note {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 1.125rem;
+    line-height: 1.8;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nav {
+        gap: 0.75rem;
+    }
+
+    .btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .about-page h1 {
+        font-size: 2rem;
+    }
+
+    .step {
+        flex-direction: column;
+    }
+
+    .target-audience {
+        grid-template-columns: 1fr;
+    }
+
+    .principles {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== ИНТЕРВИЗИИ ==================== */
+
+/* Заголовок страницы */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+/* Таблицы */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+}
+
+.table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.table a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.table a:hover {
+    text-decoration: underline;
+}
+
+/* Маленькие кнопки */
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.btn-danger {
+    background: var(--error-color);
+    color: var(--white);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Пустое состояние */
+.empty-state {
+    padding: 3rem;
+    text-align: center;
+    background: var(--white);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.empty-state p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+/* Контейнер формы */
+.form-container {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    max-width: 600px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Информационный блок */
+.session-info,
+.group-info {
+    background: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.session-info p,
+.group-info p {
+    margin: 0.5rem 0;
+}
+
+/* Список посещаемости */
+.attendance-list {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+.attendance-list .help-text {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+.attendance-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-item:last-child {
+    border-bottom: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+}
+
+.participant-name {
+    font-weight: 500;
+}
+
+.participant-email {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.note {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    font-style: italic;
+    margin-top: 1rem;
+}
+
+/* Статус-бейджи */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-scheduled {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-in-progress {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-completed {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.badge-cancelled {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Детали группы/сессии */
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.detail-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.detail-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.detail-card .label {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Секция */
+.section {
+    margin-top: 2rem;
+}
+
+.section h2 {
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+/* Участники */
+.participants-list {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.participant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.participant-item:last-child {
+    border-bottom: none;
+}
+
+/* Добавление участника */
+.add-participant-form {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.add-participant-form select {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+}
+
+/* Предупреждения */
+.alert-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fbbf24;
+}
+
+/* Дополнительные стили */
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.empty-message {
+    color: var(--text-light);
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.description-box {
+    background: #f8f9fa;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.danger-zone {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.danger-zone h2 {
+    color: var(--error-color);
+}
+
+.inline-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.inline-form select {
+    flex: 1;
+    max-width: 300px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.subtitle {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+.session-meta {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.session-meta p {
+    margin: 0.5rem 0;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge-secondary {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ==================== КЕЙСЫ ==================== */
+
+/* Список кейсов */
+.cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.case-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.case-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--text-color);
+}
+
+.case-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.case-meta .problem-type {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+}
+
+.case-meta .responses-count {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.case-description {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.case-budget {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.case-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Статус кейсов */
+.badge-open {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-in_progress,
+.badge-in-progress {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-closed {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.badge-cancelled {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Типы оплаты */
+.badge-paid {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.badge-review {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.badge-negotiable {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+/* Детали кейса */
+.case-details {
+    max-width: 800px;
+}
+
+.case-info-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+
+/* Фильтры */
+.filters-bar {
+    background: var(--white);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-group label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-light);
+    text-transform: uppercase;
+}
+
+.filter-group select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    min-width: 180px;
+}
+
+/* Статистика кликабельная */
+.stats-grid .stat-card {
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.stats-grid .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stats-grid .stat-active {
+    border: 2px solid var(--primary-color);
+}
+
+/* Отклики */
+.responses-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.response-card {
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--border-color);
+}
+
+.response-card.response-accepted {
+    border-left-color: var(--success-color);
+    background: #f0fdf4;
+}
+
+.response-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.psychologist-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.psychologist-info .email {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.response-message {
+    margin-bottom: 1rem;
+}
+
+.response-message p {
+    line-height: 1.6;
+}
+
+.proposed-price {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: #fef3c7;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.response-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.response-footer .date {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* Статус откликов */
+.badge-pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-accepted {
+    background: #d1fae5;
+    color: #047857;
+}
+
+.badge-rejected {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* Адаптивность для кейсов */
+@media (max-width: 768px) {
+    .case-header {
+        flex-direction: column;
+    }
+
+    .filter-form {
+        flex-direction: column;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .response-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .response-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+}
+
+/* ==================== ПРОФИЛИ ПСИХОЛОГОВ ==================== */
+
+/* Заголовок страницы */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-light);
+    font-size: 1.125rem;
+}
+
+/* Сетка карточек психологов */
+.psychologists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.psychologist-card {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.psychologist-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.psy-card-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.psy-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.psy-name {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--text-color);
+}
+
+.psy-since {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.psy-specializations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
+}
+
+.badge-primary {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.psy-bio {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+.psy-rate {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.psy-card-actions {
+    margin-top: auto;
+}
+
+/* Страница профиля */
+.profile-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 auto 1rem;
+}
+
+.profile-header h1 {
+    margin-bottom: 0.75rem;
+}
+
+.profile-specializations {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.warning-box {
+    background: #fffbeb;
+    border: 1px solid #fbbf24;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: #92400e;
+}
+
+.profile-content {
+    background: var(--white);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.profile-section {
+    margin-bottom: 2rem;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+}
+
+.profile-section h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.profile-section p {
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.profile-rate {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.text-muted {
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+/* Статистика */
+.stats-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* Форма редактирования профиля */
+.profile-form {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+}
+
+.required {
+    color: var(--error-color);
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 0.5rem;
+}
+
+.form-hint {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+/* Адаптивность для профилей */
+@media (max-width: 768px) {
+    .psychologists-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        justify-content: center;
+    }
+
+    .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-form {
+        padding: 1.25rem;
+    }
+}

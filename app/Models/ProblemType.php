@@ -1,30 +1,27 @@
 <?php
+
 namespace App\Models;
 
-use Core\Model;
-use Core\Database;
+use Illuminate\Database\Eloquent\Model;
 
-/**
- * ProblemType - модель типов проблем
- */
 class ProblemType extends Model
 {
-    protected string $table = 'problem_types';
+    public $timestamps = false;
 
-    /**
-     * Получить все активные типы проблем
-     */
-    public function getActive(): array
+    protected $fillable = ['name', 'slug', 'description', 'is_active', 'sort_order'];
+
+    protected function casts(): array
     {
-        $sql = "SELECT * FROM {$this->table} WHERE is_active = 1 ORDER BY sort_order ASC";
-        return Database::query($sql);
+        return ['is_active' => 'boolean'];
     }
 
-    /**
-     * Найти по slug
-     */
-    public function findBySlug(string $slug): ?array
+    public function cases()
     {
-        return $this->where('slug', $slug);
+        return $this->hasMany(ClientCase::class, 'problem_type_id');
+    }
+
+    public function psychologistSpecializations()
+    {
+        return $this->hasMany(PsychologistSpecialization::class, 'problem_type_id');
     }
 }
