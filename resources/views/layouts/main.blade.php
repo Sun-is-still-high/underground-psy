@@ -16,6 +16,9 @@
                     <a href="{{ route('psychologists.index') }}" class="nav-link">Психологи</a>
                     <a href="{{ route('about') }}" class="nav-link">О проекте</a>
                     @auth
+                        @if (auth()->user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link nav-link--admin">Админ</a>
+                        @endif
                         <a href="{{ route('dashboard') }}" class="nav-link">Личный кабинет</a>
                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                             @csrf
