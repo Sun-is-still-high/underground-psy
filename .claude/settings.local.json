@@ -12,7 +12,10 @@
       "Bash(php -r \":*)",
       "Bash(php artisan route:list --compact)",
       "Bash(php artisan route:list)",
-      "Bash(xargs head -100)"
+      "Bash(xargs head -100)",
+      "Bash(php artisan migrate --pretend)",
+      "Bash(where composer)",
+      "Bash(php artisan migrate --force)"
     ]
   }
 }
