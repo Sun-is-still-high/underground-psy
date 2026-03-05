@@ -15,11 +15,16 @@ class PsychologistProfile extends Model
         'hourly_rate_min',
         'hourly_rate_max',
         'is_published',
+        'diploma_scan_url',
+        'diploma_verified',
     ];
 
     protected function casts(): array
     {
-        return ['is_published' => 'boolean'];
+        return [
+            'is_published' => 'boolean',
+            'diploma_verified' => 'boolean',
+        ];
     }
 
     public function user()

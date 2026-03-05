@@ -5,7 +5,11 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\CaseSearchController;
 use App\Http\Controllers\PsychologistController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\Admin\IntervisionController;
+use App\Http\Controllers\Admin\VerificationController as AdminVerification;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUsers;
 use Illuminate\Support\Facades\Route;
@@ -18,9 +22,23 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/psychologists', [PsychologistController::class, 'index'])->name('psychologists.index');
 Route::get('/psychologists/{id}', [PsychologistController::class, 'show'])->name('psychologists.show');
 
+// Публичные мероприятия
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
+// Публичные вопросы и ответы
+Route::get('/questions', [QuestionController::class, 'publicIndex'])->name('questions.index');
+Route::get('/ask', [QuestionController::class, 'askForm'])->name('questions.ask');
+Route::post('/ask', [QuestionController::class, 'askSubmit'])->name('questions.ask.submit');
+
 // Авторизованные маршруты
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Настройки (все авторизованные роли)
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/timezone', [SettingsController::class, 'saveTimezone'])->name('settings.timezone');
+    Route::post('/settings/gender', [SettingsController::class, 'saveGender'])->name('settings.gender');
 
     // ==================== КЛИЕНТ ====================
     Route::middleware(['role:CLIENT'])->prefix('client')->name('client.')->group(function () {
@@ -38,6 +56,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/cases/{id}', [CaseSearchController::class, 'show'])->name('cases.show');
         Route::post('/cases/{id}/respond', [CaseSearchController::class, 'respond'])->name('cases.respond');
         Route::get('/intervisions', [DashboardController::class, 'intervisionStatus'])->name('intervisions');
+        Route::get('/questions', [QuestionController::class, 'psychologistIndex'])->name('questions');
+        Route::post('/questions/{question}/answer', [QuestionController::class, 'answer'])->name('questions.answer');
+        Route::get('/events', [EventController::class, 'myEvents'])->name('events');
+        Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
         Route::get('/profile/edit', [PsychologistController::class, 'editProfile'])->name('profile.edit');
         Route::post('/profile/update', [PsychologistController::class, 'updateProfile'])->name('profile.update');
     });
@@ -49,6 +72,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users', [AdminUsers::class, 'index'])->name('users.index');
         Route::post('/users/{user}/block', [AdminUsers::class, 'block'])->name('users.block');
         Route::post('/users/{user}/unblock', [AdminUsers::class, 'unblock'])->name('users.unblock');
+
+        // Верификация дипломов
+        Route::get('/verification', [AdminVerification::class, 'index'])->name('verification.index');
+        Route::post('/verification/{profile}/approve', [AdminVerification::class, 'approve'])->name('verification.approve');
+        Route::post('/verification/{profile}/reject', [AdminVerification::class, 'reject'])->name('verification.reject');
 
         // Интервизии
         Route::prefix('intervision')->name('intervision.')->group(function () {

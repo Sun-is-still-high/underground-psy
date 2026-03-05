@@ -1,19 +1,42 @@
 <?php
+
 namespace App\Models;
 
-use Core\Model;
-use Core\Database;
+use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    protected string $table = 'events';
+    protected $table = 'events';
+
+    protected $fillable = [
+        'organizer_id',
+        'title',
+        'description',
+        'event_type',
+        'format',
+        'city',
+        'meeting_link',
+        'price',
+        'max_participants',
+        'scheduled_at',
+        'duration_minutes',
+        'status',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'scheduled_at' => 'datetime',
+            'price'        => 'decimal:2',
+        ];
+    }
 
     public const TYPES = [
-        'GROUP_THERAPY'  => 'Групповая терапия',
-        'SUPPORT_GROUP'  => 'Группа поддержки',
-        'SEMINAR'        => 'Семинар',
-        'TRAINING'       => 'Тренинг',
-        'WEBINAR'        => 'Вебинар',
+        'GROUP_THERAPY' => 'Групповая терапия',
+        'SUPPORT_GROUP' => 'Группа поддержки',
+        'SEMINAR'       => 'Семинар',
+        'TRAINING'      => 'Тренинг',
+        'WEBINAR'       => 'Вебинар',
     ];
 
     public const FORMATS = [
@@ -21,58 +44,18 @@ class Event extends Model
         'OFFLINE' => 'Офлайн',
     ];
 
-    /**
-     * Получить предстоящие активные мероприятия для публичного каталога
-     */
-    public function getUpcoming(array $filters = []): array
+    public function organizer()
     {
-        $sql = "SELECT e.*, u.name as organizer_name, pp.photo_url as organizer_photo
-                FROM {$this->table} e
-                JOIN users u ON e.organizer_id = u.id
-                LEFT JOIN psychologist_profiles pp ON pp.user_id = u.id
-                WHERE e.status = 'ACTIVE' AND e.scheduled_at > NOW()";
-
-        $params = [];
-
-        if (!empty($filters['event_type'])) {
-            $sql .= " AND e.event_type = :event_type";
-            $params['event_type'] = $filters['event_type'];
-        }
-
-        if (!empty($filters['format'])) {
-            $sql .= " AND e.format = :format";
-            $params['format'] = $filters['format'];
-        }
-
-        $sql .= " ORDER BY e.scheduled_at ASC";
-
-        return Database::query($sql, $params);
+        return $this->belongsTo(User::class, 'organizer_id');
     }
 
-    /**
-     * Получить мероприятие по ID с деталями организатора
-     */
-    public function getWithOrganizer(int $id): ?array
+    public function scopeActive($query)
     {
-        $sql = "SELECT e.*, u.name as organizer_name, u.email as organizer_email,
-                       pp.photo_url as organizer_photo, pp.id as organizer_profile_id
-                FROM {$this->table} e
-                JOIN users u ON e.organizer_id = u.id
-                LEFT JOIN psychologist_profiles pp ON pp.user_id = u.id
-                WHERE e.id = :id";
-
-        return Database::queryOne($sql, ['id' => $id]);
+        return $query->where('status', 'ACTIVE');
     }
 
-    /**
-     * Мероприятия конкретного психолога
-     */
-    public function getByOrganizer(int $organizerId): array
+    public function scopeUpcoming($query)
     {
-        $sql = "SELECT * FROM {$this->table}
-                WHERE organizer_id = :organizer_id
-                ORDER BY scheduled_at DESC";
-
-        return Database::query($sql, ['organizer_id' => $organizerId]);
+        return $query->where('scheduled_at', '>', now());
     }
 }

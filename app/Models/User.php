@@ -17,6 +17,8 @@ class User extends Authenticatable
         'role',
         'is_blocked',
         'blocked_reason',
+        'timezone',
+        'gender',
     ];
 
     protected $hidden = [
@@ -68,19 +70,4 @@ class User extends Authenticatable
         return $this->hasMany(IntervisionParticipant::class, 'psychologist_id');
     }
 
-    /**
-     * Обновить часовой пояс пользователя
-     */
-    public function updateTimezone(int $id, string $timezone): void
-    {
-        $this->update($id, ['timezone' => $timezone]);
-    }
-
-    /**
-     * Обновить пол пользователя
-     */
-    public function updateGender(int $id, ?string $gender): void
-    {
-        $this->update($id, ['gender' => $gender]);
-    }
 }
