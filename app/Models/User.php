@@ -1,62 +1,71 @@
 <?php
+
 namespace App\Models;
 
-use Core\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-/**
- * User Model - модель пользователя
- */
-class User extends Model
+class User extends Authenticatable
 {
-    protected string $table = 'users';
+    use HasFactory, Notifiable;
 
-    /**
-     * Найти пользователя по email
-     */
-    public function findByEmail(string $email): ?array
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'is_blocked',
+        'blocked_reason',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
     {
-        return $this->where('email', $email);
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_blocked' => 'boolean',
+        ];
     }
 
-    /**
-     * Создать нового пользователя
-     */
-    public function createUser(array $data): int
+    public function isClient(): bool
     {
-        // Хешируем пароль
-        $data['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
-        unset($data['password']);
-
-        // Устанавливаем роль по умолчанию, если не указана
-        if (!isset($data['role'])) {
-            $data['role'] = 'CLIENT';
-        }
-
-        return $this->create($data);
+        return $this->role === 'CLIENT';
     }
 
-    /**
-     * Проверить пароль пользователя
-     */
-    public function verifyPassword(string $password, string $hash): bool
+    public function isPsychologist(): bool
     {
-        return password_verify($password, $hash);
+        return $this->role === 'PSYCHOLOGIST';
     }
 
-    /**
-     * Проверка существования email
-     */
-    public function emailExists(string $email): bool
+    public function isAdmin(): bool
     {
-        return $this->findByEmail($email) !== null;
+        return $this->role === 'ADMIN';
     }
 
-    /**
-     * Получить пользователя по ID
-     */
-    public function getUserById(int $id): ?array
+    public function psychologistProfile()
     {
-        return $this->find($id);
+        return $this->hasOne(PsychologistProfile::class);
+    }
+
+    public function cases()
+    {
+        return $this->hasMany(ClientCase::class, 'client_id');
+    }
+
+    public function caseResponses()
+    {
+        return $this->hasMany(CaseResponse::class, 'psychologist_id');
+    }
+
+    public function intervisionParticipations()
+    {
+        return $this->hasMany(IntervisionParticipant::class, 'psychologist_id');
     }
 
     /**

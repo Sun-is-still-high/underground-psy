@@ -3,7 +3,15 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(php --version)",
-      "Bash(composer --version)"
+      "Bash(composer --version)",
+      "Bash(composer create-project laravel/laravel _temp_laravel --prefer-dist)",
+      "Bash(composer require laravel/breeze --dev)",
+      "Bash(php artisan breeze:install blade --no-interaction)",
+      "Bash(cat /c/OSPanel/home/underground-psy/_old_mvc/app/Controllers/Admin/*.php)",
+      "Bash(php artisan migrate:fresh --seed)",
+      "Bash(php -r \":*)",
+      "Bash(php artisan route:list --compact)",
+      "Bash(php artisan route:list)"
     ]
   }
 }

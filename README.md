@@ -1,227 +1,59 @@
-# Underground Psy - PHP MVC Application
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-Некоммерческая платформа для связи клиентов с начинающими психологами. MVP версия с регистрацией и авторизацией.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## 🚀 Технологии
+## About Laravel
 
-- **Backend:** PHP 7.4+ (без фреймворков)
-- **Database:** MySQL 5.7+
-- **Architecture:** MVC (Model-View-Controller)
-- **Аутентификация:** PHP Sessions + bcrypt
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## 📁 Структура проекта
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-```
-underground-psy/
-├── public/              # Точка входа (DocumentRoot)
-│   ├── index.php       # Front Controller
-│   ├── .htaccess       # URL rewriting
-│   └── css/            # Стили
-├── app/
-│   ├── Controllers/    # Контроллеры
-│   ├── Models/         # Модели данных
-│   └── Views/          # Шаблоны (PHP)
-├── core/               # MVC ядро
-│   ├── Router.php
-│   ├── Database.php
-│   ├── Controller.php
-│   ├── Model.php
-│   ├── View.php
-│   ├── Session.php
-│   ├── Request.php
-│   └── bootstrap.php
-├── config/             # Конфигурация
-│   ├── database.php
-│   ├── app.php
-│   └── routes.php
-└── storage/            # Логи и загрузки
-```
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## ⚙️ Установка
+## Learning Laravel
 
-### 1. Требования
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-- PHP 7.4 или выше
-- MySQL 5.7 или выше
-- Apache с mod_rewrite (или Nginx)
-- OSPanel / XAMPP / MAMP (для локальной разработки)
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-### 2. Настройка базы данных
+## Laravel Sponsors
 
-1. Создайте базу данных и импортируйте схему:
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-```bash
-mysql -u root -p < database.sql
-```
+### Premium Partners
 
-Или через phpMyAdmin:
-- Создайте БД `underground_psy`
-- Импортируйте файл `database.sql`
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-2. Настройте параметры подключения в `config/database.php`:
+## Contributing
 
-```php
-return [
-    'host' => 'localhost',
-    'port' => '3306',
-    'database' => 'underground_psy',
-    'username' => 'root',
-    'password' => '',  // Ваш пароль MySQL
-    'charset' => 'utf8mb4',
-];
-```
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-### 3. Настройка веб-сервера
+## Code of Conduct
 
-#### Apache (OSPanel/XAMPP)
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-1. Убедитесь, что `mod_rewrite` включен
-2. Установите DocumentRoot на папку `public/`
-3. Файл `.htaccess` уже настроен
+## Security Vulnerabilities
 
-Для OSPanel:
-- Разместите проект в `OSPanel/domains/underground-psy/`
-- DocumentRoot должен указывать на `underground-psy/public/`
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-#### Nginx
+## License
 
-```nginx
-server {
-    listen 80;
-    server_name underground-psy.local;
-    root /path/to/underground-psy/public;
-    index index.php;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
-    }
-}
-```
-
-### 4. Права доступа (Linux)
-
-```bash
-chmod -R 755 storage/
-chmod -R 755 public/
-```
-
-## 🎯 Использование
-
-### Доступные маршруты
-
-| Метод | URI | Описание |
-|-------|-----|----------|
-| GET | `/` | Главная страница |
-| GET | `/login` | Форма входа |
-| POST | `/login` | Обработка входа |
-| GET | `/register` | Форма регистрации |
-| POST | `/register` | Обработка регистрации |
-| POST | `/logout` | Выход из системы |
-| GET | `/dashboard` | Личный кабинет (защищен) |
-
-### Роли пользователей
-
-- **CLIENT** - Клиент (по умолчанию)
-- **PSYCHOLOGIST** - Психолог
-- **ADMIN** - Администратор
-
-### Тестовые данные
-
-Вы можете создать тестовых пользователей через регистрацию или раскомментировать INSERT в `database.sql`:
-
-- **Email:** client@test.com
-  **Пароль:** password123
-  **Роль:** CLIENT
-
-- **Email:** psychologist@test.com
-  **Пароль:** password123
-  **Роль:** PSYCHOLOGIST
-
-## 🏗️ Архитектура
-
-### Front Controller Pattern
-
-Все запросы проходят через `public/index.php`:
-
-```
-Пользователь → .htaccess → index.php → Router → Controller → View
-```
-
-### Как работает маршрутизация
-
-1. `.htaccess` перенаправляет все запросы на `index.php`
-2. `Router` читает `config/routes.php`
-3. Находит совпадение URI и вызывает контроллер
-4. Контроллер обрабатывает запрос и рендерит view
-
-### Пример добавления маршрута
-
-`config/routes.php`:
-```php
-['method' => 'GET', 'uri' => '/about', 'action' => 'PageController@about']
-```
-
-### Пример контроллера
-
-```php
-<?php
-namespace App\Controllers;
-
-use Core\Controller;
-
-class PageController extends Controller
-{
-    public function about(): void
-    {
-        $this->view('pages/about', [
-            'title' => 'О нас'
-        ]);
-    }
-}
-```
-
-## 🔒 Безопасность
-
-- ✅ Пароли хешируются через `password_hash()` (bcrypt)
-- ✅ SQL-инъекции защищены через PDO prepared statements
-- ✅ XSS защита через `htmlspecialchars()` в views
-- ✅ CSRF токены (TODO: будут добавлены)
-- ✅ Валидация email через `filter_var()`
-
-## 📝 TODO / Следующие шаги
-
-- [ ] CSRF защита для форм
-- [ ] Восстановление пароля
-- [ ] Email верификация
-- [ ] Профили психологов
-- [ ] Система бронирования
-- [ ] Админ-панель
-- [ ] API endpoints
-
-## 🐛 Отладка
-
-Включите режим отладки в `config/app.php`:
-
-```php
-'debug' => true,
-```
-
-Логи ошибок будут отображаться на странице.
-
-## 📄 Лицензия
-
-Некоммерческий проект для образовательных целей.
-
-## 👨‍💻 Разработка
-
-Создано с использованием чистого PHP в MVC архитектуре без фреймворков.
-
----
-
-**Примечание:** Это MVP версия с базовой аутентификацией. Функционал бронирования сеансов и управления расписанием будет добавлен в следующих версиях.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

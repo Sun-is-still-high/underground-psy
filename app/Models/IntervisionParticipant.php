@@ -1,100 +1,36 @@
 <?php
+
 namespace App\Models;
 
-use Core\Model;
-use Core\Database;
+use Illuminate\Database\Eloquent\Model;
 
 class IntervisionParticipant extends Model
 {
-    protected string $table = 'intervision_participants';
+    public $timestamps = false;
 
-    /**
-     * Добавить психолога в группу
-     */
-    public function addToGroup(int $groupId, int $psychologistId): int
+    protected $fillable = ['group_id', 'psychologist_id', 'is_active', 'left_at'];
+
+    protected function casts(): array
     {
-        $existing = $this->findByGroupAndPsychologist($groupId, $psychologistId);
-
-        if ($existing) {
-            $this->update($existing['id'], [
-                'is_active' => true,
-                'left_at' => null
-            ]);
-            return $existing['id'];
-        }
-
-        return $this->create([
-            'group_id' => $groupId,
-            'psychologist_id' => $psychologistId
-        ]);
+        return [
+            'is_active' => 'boolean',
+            'left_at' => 'datetime',
+            'joined_at' => 'datetime',
+        ];
     }
 
-    /**
-     * Удалить психолога из группы (soft delete)
-     */
-    public function removeFromGroup(int $groupId, int $psychologistId): bool
+    public function group()
     {
-        $sql = "UPDATE {$this->table}
-                SET is_active = 0, left_at = NOW()
-                WHERE group_id = :group_id AND psychologist_id = :psychologist_id";
-        return Database::execute($sql, [
-            'group_id' => $groupId,
-            'psychologist_id' => $psychologistId
-        ]);
+        return $this->belongsTo(IntervisionGroup::class, 'group_id');
     }
 
-    /**
-     * Найти участие по группе и психологу
-     */
-    public function findByGroupAndPsychologist(int $groupId, int $psychologistId): ?array
+    public function psychologist()
     {
-        $sql = "SELECT * FROM {$this->table}
-                WHERE group_id = :group_id AND psychologist_id = :psychologist_id";
-        return Database::queryOne($sql, [
-            'group_id' => $groupId,
-            'psychologist_id' => $psychologistId
-        ]);
+        return $this->belongsTo(User::class, 'psychologist_id');
     }
 
-    /**
-     * Проверить, является ли психолог участником группы
-     */
-    public function isInGroup(int $groupId, int $psychologistId): bool
+    public function attendanceRecords()
     {
-        $sql = "SELECT 1 FROM {$this->table}
-                WHERE group_id = :group_id
-                AND psychologist_id = :psychologist_id
-                AND is_active = 1";
-        return Database::queryOne($sql, [
-            'group_id' => $groupId,
-            'psychologist_id' => $psychologistId
-        ]) !== null;
-    }
-
-    /**
-     * Получить всех активных участников группы
-     */
-    public function getActiveByGroup(int $groupId): array
-    {
-        $sql = "SELECT ip.*, u.name, u.email
-                FROM {$this->table} ip
-                JOIN users u ON ip.psychologist_id = u.id
-                WHERE ip.group_id = :group_id AND ip.is_active = 1
-                ORDER BY ip.joined_at";
-        return Database::query($sql, ['group_id' => $groupId]);
-    }
-
-    /**
-     * Получить все группы психолога
-     */
-    public function getGroupsByPsychologist(int $psychologistId): array
-    {
-        $sql = "SELECT ig.*, ip.joined_at
-                FROM intervision_groups ig
-                JOIN {$this->table} ip ON ig.id = ip.group_id
-                WHERE ip.psychologist_id = :psychologist_id
-                AND ip.is_active = 1 AND ig.is_active = 1
-                ORDER BY ig.name";
-        return Database::query($sql, ['psychologist_id' => $psychologistId]);
+        return $this->hasMany(IntervisionAttendance::class, 'participant_id');
     }
 }
