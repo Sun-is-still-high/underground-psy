@@ -58,4 +58,20 @@ class User extends Model
     {
         return $this->find($id);
     }
+
+    /**
+     * Обновить часовой пояс пользователя
+     */
+    public function updateTimezone(int $id, string $timezone): void
+    {
+        $this->update($id, ['timezone' => $timezone]);
+    }
+
+    /**
+     * Обновить пол пользователя
+     */
+    public function updateGender(int $id, ?string $gender): void
+    {
+        $this->update($id, ['gender' => $gender]);
+    }
 }

@@ -30,7 +30,11 @@ class PsychologistController extends Controller
 
         $filters = [
             'problem_type_id' => $request->get('specialization') ? (int) $request->get('specialization') : null,
-            'search' => $request->get('search'),
+            'search'          => $request->get('search'),
+            'gender'          => $request->get('gender'),
+            'work_format'     => $request->get('work_format'),
+            'language'        => $request->get('language'),
+            'price_max'       => $request->get('price_max') ? (float) $request->get('price_max') : null,
         ];
 
         $psychologists = $this->profileModel->getPublishedProfiles($filters);
@@ -44,8 +48,8 @@ class PsychologistController extends Controller
 
         $this->view('psychologists/index', [
             'psychologists' => $psychologists,
-            'problemTypes' => $problemTypes,
-            'filters' => $filters,
+            'problemTypes'  => $problemTypes,
+            'filters'       => $filters,
         ]);
     }
 
@@ -63,12 +67,12 @@ class PsychologistController extends Controller
         }
 
         $specializations = $this->profileModel->getSpecializations($id);
-        $stats = $this->profileModel->getActivityStats($profile['user_id']);
+        $stats           = $this->profileModel->getActivityStats($profile['user_id']);
 
         $this->view('psychologists/show', [
-            'profile' => $profile,
+            'profile'         => $profile,
             'specializations' => $specializations,
-            'stats' => $stats,
+            'stats'           => $stats,
         ]);
     }
 
@@ -89,17 +93,21 @@ class PsychologistController extends Controller
 
         if (!$profile) {
             $profileId = $this->profileModel->create(['user_id' => $user['id']]);
-            $profile = $this->profileModel->find($profileId);
+            $profile   = $this->profileModel->find($profileId);
         }
 
         $specializations = $this->profileModel->getSpecializations($profile['id']);
-        $problemTypes = $this->problemTypeModel->getActive();
+        $problemTypes    = $this->problemTypeModel->getActive();
+        $completeness    = $this->profileModel->getProfileCompleteness($profile, $specializations);
+        $needsConfirm    = $this->profileModel->needsPriceConfirmation($profile['id']);
 
         $this->view('psychologist/profile-edit', [
-            'user' => $user,
-            'profile' => $profile,
+            'user'            => $user,
+            'profile'         => $profile,
             'specializations' => $specializations,
-            'problemTypes' => $problemTypes,
+            'problemTypes'    => $problemTypes,
+            'completeness'    => $completeness,
+            'needsConfirm'    => $needsConfirm,
         ]);
     }
 
@@ -124,21 +132,43 @@ class PsychologistController extends Controller
 
         $request = new Request();
 
-        $bio = trim($request->input('bio', ''));
+        $bio                = trim($request->input('bio', ''));
         $methodsDescription = trim($request->input('methods_description', ''));
-        $education = trim($request->input('education', ''));
-        $experienceDescription = trim($request->input('experience_description', ''));
-        $hourlyRateMin = $request->input('hourly_rate_min') !== '' ? (float) $request->input('hourly_rate_min') : null;
-        $hourlyRateMax = $request->input('hourly_rate_max') !== '' ? (float) $request->input('hourly_rate_max') : null;
-        $isPublished = $request->input('is_published') === '1' ? 1 : 0;
+        $education          = trim($request->input('education', ''));
+        $experienceDesc     = trim($request->input('experience_description', ''));
+        $hourlyRateMin      = $request->input('hourly_rate_min') !== '' ? (float) $request->input('hourly_rate_min') : null;
+        $hourlyRateMax      = $request->input('hourly_rate_max') !== '' ? (float) $request->input('hourly_rate_max') : null;
+        $isPublished        = $request->input('is_published') === '1' ? 1 : 0;
+        $workFormat         = $request->input('work_format', 'ONLINE');
+        $city               = trim($request->input('city', ''));
+        $languages          = trim($request->input('languages', ''));
+        $profileMode        = $request->input('profile_mode', 'FULL');
+
+        // Целевая аудитория — массив чекбоксов
+        $targetAudienceArr = $request->input('target_audience');
+        $targetAudience    = is_array($targetAudienceArr) ? implode(',', $targetAudienceArr) : '';
+
+        // Пол — обновляем в users
+        $gender = $request->input('gender');
+        if (in_array($gender, ['MALE', 'FEMALE'])) {
+            $this->userModel->updateGender($user['id'], $gender);
+        } elseif ($gender === '') {
+            $this->userModel->updateGender($user['id'], null);
+        }
 
         $errors = [];
 
         if ($isPublished && empty($bio)) {
-            $errors[] = 'Для публикации профиля необходимо заполнить поле "О себе"';
+            $errors[] = 'Для публикации профиля необходимо заполнить поле «О себе»';
         }
         if ($hourlyRateMin !== null && $hourlyRateMax !== null && $hourlyRateMin > $hourlyRateMax) {
             $errors[] = 'Минимальная ставка не может быть больше максимальной';
+        }
+        if (!in_array($workFormat, ['ONLINE', 'OFFLINE', 'BOTH'])) {
+            $workFormat = 'ONLINE';
+        }
+        if ($workFormat !== 'ONLINE' && empty($city)) {
+            $errors[] = 'Для офлайн-приёмов укажите город';
         }
 
         if (!empty($errors)) {
@@ -148,14 +178,33 @@ class PsychologistController extends Controller
             return;
         }
 
+        // Обработка загрузки фото
+        $photoUrl = $profile['photo_url'] ?? null;
+        if (!empty($_FILES['photo']['name'])) {
+            $uploaded = $this->uploadFile($_FILES['photo'], 'photos', ['image/jpeg', 'image/png', 'image/webp']);
+            if ($uploaded) {
+                $photoUrl = $uploaded;
+            } else {
+                Session::flash('errors', ['Не удалось загрузить фото. Допустимые форматы: JPG, PNG, WEBP. Максимум 5 МБ']);
+                $this->redirect('/psychologist/profile/edit');
+                return;
+            }
+        }
+
         $this->profileModel->update($profile['id'], [
-            'bio' => $bio,
-            'methods_description' => $methodsDescription,
-            'education' => $education,
-            'experience_description' => $experienceDescription,
-            'hourly_rate_min' => $hourlyRateMin,
-            'hourly_rate_max' => $hourlyRateMax,
-            'is_published' => $isPublished,
+            'bio'                    => $bio,
+            'methods_description'    => $methodsDescription,
+            'education'              => $education,
+            'experience_description' => $experienceDesc,
+            'hourly_rate_min'        => $hourlyRateMin,
+            'hourly_rate_max'        => $hourlyRateMax,
+            'is_published'           => $isPublished,
+            'work_format'            => $workFormat,
+            'city'                   => $city ?: null,
+            'languages'              => $languages ?: null,
+            'target_audience'        => $targetAudience ?: null,
+            'photo_url'              => $photoUrl,
+            'profile_mode'           => in_array($profileMode, ['FULL', 'REGISTRY']) ? $profileMode : 'FULL',
         ]);
 
         $specializations = $request->input('specializations');
@@ -167,6 +216,105 @@ class PsychologistController extends Controller
 
         Session::flash('success', 'Профиль успешно обновлён!');
         $this->redirect('/psychologist/profile/edit');
+    }
+
+    /**
+     * Загрузка скана диплома
+     */
+    public function uploadDiploma(): void
+    {
+        $this->requireAuth();
+        $user = $this->getUser();
+
+        if ($user['role'] !== 'PSYCHOLOGIST') {
+            $this->redirect('/dashboard');
+            return;
+        }
+
+        $profile = $this->profileModel->findByUserId($user['id']);
+        if (!$profile) {
+            $this->redirect('/dashboard');
+            return;
+        }
+
+        if (empty($_FILES['diploma']['name'])) {
+            Session::flash('errors', ['Файл диплома не выбран']);
+            $this->redirect('/psychologist/profile/edit');
+            return;
+        }
+
+        $uploaded = $this->uploadFile(
+            $_FILES['diploma'],
+            'diplomas/' . $user['id'],
+            ['image/jpeg', 'image/png', 'application/pdf']
+        );
+
+        if (!$uploaded) {
+            Session::flash('errors', ['Не удалось загрузить файл. Допустимые форматы: JPG, PNG, PDF. Максимум 10 МБ']);
+            $this->redirect('/psychologist/profile/edit');
+            return;
+        }
+
+        $this->profileModel->update($profile['id'], [
+            'diploma_scan_url' => $uploaded,
+            'diploma_verified' => 0,
+        ]);
+
+        Session::flash('success', 'Диплом загружен и отправлен на проверку администратору');
+        $this->redirect('/psychologist/profile/edit');
+    }
+
+    /**
+     * Подтверждение актуальности цен
+     */
+    public function confirmPrice(): void
+    {
+        $this->requireAuth();
+        $user = $this->getUser();
+
+        if ($user['role'] !== 'PSYCHOLOGIST') {
+            $this->redirect('/dashboard');
+            return;
+        }
+
+        $profile = $this->profileModel->findByUserId($user['id']);
+        if ($profile) {
+            $this->profileModel->confirmPrice($profile['id']);
+            Session::flash('success', 'Актуальность цен подтверждена!');
+        }
+
+        $this->redirect('/psychologist/profile/edit');
+    }
+
+    /**
+     * Загрузка файла в storage/
+     * Возвращает относительный URL или null при ошибке
+     */
+    private function uploadFile(array $file, string $subdir, array $allowedMimes): ?string
+    {
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $mime = mime_content_type($file['tmp_name']);
+        if (!in_array($mime, $allowedMimes)) {
+            return null;
+        }
+
+        $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = uniqid('', true) . '.' . $ext;
+        $dir      = __DIR__ . '/../../storage/' . $subdir;
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $dest = $dir . '/' . $filename;
+        if (!move_uploaded_file($file['tmp_name'], $dest)) {
+            return null;
+        }
+
+        return '/storage/' . $subdir . '/' . $filename;
     }
 
     private function getUser(): array

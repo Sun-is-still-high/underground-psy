@@ -31,20 +31,6 @@ class IntervisionController extends Controller
         $this->userModel = new User();
     }
 
-    /**
-     * Проверка роли админа
-     */
-    private function requireAdmin(): void
-    {
-        $this->requireAuth();
-        $user = $this->userModel->find(Session::userId());
-
-        if (!$user || $user['role'] !== 'ADMIN') {
-            Session::flash('error', 'Доступ запрещён');
-            $this->redirect('/dashboard');
-        }
-    }
-
     // ==================== ГРУППЫ ====================
 
     /**

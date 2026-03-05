@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
     role ENUM('CLIENT', 'PSYCHOLOGIST', 'ADMIN') DEFAULT 'CLIENT',
+    timezone VARCHAR(50) DEFAULT 'Europe/Moscow' COMMENT 'Часовой пояс пользователя',
+    gender ENUM('MALE', 'FEMALE') NULL COMMENT 'Пол',
     is_blocked BOOLEAN DEFAULT FALSE,
     blocked_reason TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -202,12 +204,22 @@ CREATE TABLE IF NOT EXISTS psychologist_profiles (
     hourly_rate_min DECIMAL(10, 2) NULL COMMENT 'Минимальная ставка в час',
     hourly_rate_max DECIMAL(10, 2) NULL COMMENT 'Максимальная ставка в час',
     is_published BOOLEAN DEFAULT FALSE COMMENT 'Опубликован ли профиль',
+    work_format ENUM('ONLINE', 'OFFLINE', 'BOTH') DEFAULT 'ONLINE' COMMENT 'Формат работы',
+    city VARCHAR(100) NULL COMMENT 'Город (для офлайн-приёмов)',
+    languages VARCHAR(255) NULL COMMENT 'Языки приёма через запятую',
+    target_audience VARCHAR(255) NULL COMMENT 'Целевая аудитория: ADULTS,COUPLES,TEENS,CHILDREN,BUSINESS',
+    photo_url VARCHAR(500) NULL COMMENT 'URL фото профиля',
+    diploma_scan_url VARCHAR(500) NULL COMMENT 'URL скана диплома',
+    diploma_verified BOOLEAN DEFAULT FALSE COMMENT 'Диплом верифицирован администратором',
+    profile_mode ENUM('FULL', 'REGISTRY') DEFAULT 'FULL' COMMENT 'FULL — полная страница, REGISTRY — только в реестре без цены',
+    price_confirmed_at TIMESTAMP NULL COMMENT 'Когда последний раз подтверждена актуальность цен',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_user_profile (user_id),
-    INDEX idx_is_published (is_published)
+    INDEX idx_is_published (is_published),
+    INDEX idx_work_format (work_format)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Специализации психологов (связь с типами проблем)
@@ -223,3 +235,81 @@ CREATE TABLE IF NOT EXISTS psychologist_specializations (
     INDEX idx_profile_id (profile_id),
     INDEX idx_problem_type_id (problem_type_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- ПУБЛИЧНЫЕ ВОПРОСЫ (без регистрации)
+-- ============================================
+
+-- Вопросы от пользователей без регистрации
+CREATE TABLE IF NOT EXISTS public_questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question TEXT NOT NULL,
+    author_name VARCHAR(100) NOT NULL,
+    author_email VARCHAR(255) NOT NULL,
+    status ENUM('PENDING', 'ANSWERED') DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ответы психологов на публичные вопросы
+CREATE TABLE IF NOT EXISTS public_answers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    psychologist_id INT NOT NULL,
+    answer TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (question_id) REFERENCES public_questions(id) ON DELETE CASCADE,
+    FOREIGN KEY (psychologist_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_question_id (question_id),
+    INDEX idx_psychologist_id (psychologist_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- МЕРОПРИЯТИЯ (семинары, группы, тренинги)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    organizer_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    event_type ENUM('GROUP_THERAPY', 'SUPPORT_GROUP', 'SEMINAR', 'TRAINING', 'WEBINAR') NOT NULL,
+    format ENUM('ONLINE', 'OFFLINE') DEFAULT 'ONLINE',
+    city VARCHAR(100) NULL,
+    meeting_link VARCHAR(500) NULL,
+    price DECIMAL(10, 2) NULL COMMENT 'NULL = бесплатно',
+    max_participants INT NULL COMMENT 'NULL = без ограничений',
+    scheduled_at DATETIME NOT NULL,
+    duration_minutes INT DEFAULT 60,
+    status ENUM('ACTIVE', 'CANCELLED', 'COMPLETED') DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_status (status),
+    INDEX idx_event_type (event_type),
+    INDEX idx_scheduled_at (scheduled_at),
+    INDEX idx_organizer_id (organizer_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- МИГРАЦИИ ДЛЯ СУЩЕСТВУЮЩИХ БАЗ
+-- Запускать только если таблицы уже существуют
+-- ============================================
+
+-- ALTER TABLE users
+--   ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'Europe/Moscow' AFTER role,
+--   ADD COLUMN IF NOT EXISTS gender ENUM('MALE', 'FEMALE') NULL AFTER timezone;
+
+-- ALTER TABLE psychologist_profiles
+--   ADD COLUMN IF NOT EXISTS work_format ENUM('ONLINE','OFFLINE','BOTH') DEFAULT 'ONLINE' AFTER is_published,
+--   ADD COLUMN IF NOT EXISTS city VARCHAR(100) NULL AFTER work_format,
+--   ADD COLUMN IF NOT EXISTS languages VARCHAR(255) NULL AFTER city,
+--   ADD COLUMN IF NOT EXISTS target_audience VARCHAR(255) NULL AFTER languages,
+--   ADD COLUMN IF NOT EXISTS photo_url VARCHAR(500) NULL AFTER target_audience,
+--   ADD COLUMN IF NOT EXISTS diploma_scan_url VARCHAR(500) NULL AFTER photo_url,
+--   ADD COLUMN IF NOT EXISTS diploma_verified BOOLEAN DEFAULT FALSE AFTER diploma_scan_url,
+--   ADD COLUMN IF NOT EXISTS profile_mode ENUM('FULL','REGISTRY') DEFAULT 'FULL' AFTER diploma_verified,
+--   ADD COLUMN IF NOT EXISTS price_confirmed_at TIMESTAMP NULL AFTER profile_mode;

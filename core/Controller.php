@@ -63,4 +63,18 @@ class Controller
             $this->redirect('/dashboard');
         }
     }
+
+    /**
+     * Проверка роли администратора
+     */
+    protected function requireAdmin(): void
+    {
+        $this->requireAuth();
+        $user = (new \App\Models\User())->getUserById(Session::userId());
+        if (!$user || $user['role'] !== 'ADMIN') {
+            Session::flash('error', 'Доступ запрещён');
+            $this->redirect('/dashboard');
+            exit;
+        }
+    }
 }

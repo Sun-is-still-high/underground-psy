@@ -65,13 +65,23 @@ ob_start();
                 <div class="action-cards">
                     <div class="action-card">
                         <h3>Мой профиль</h3>
-                        <p>Заполните профиль для клиентов</p>
+                        <p>Фото, формат работы, верификация диплома</p>
                         <a href="/psychologist/profile/edit" class="btn btn-primary">Редактировать</a>
                     </div>
                     <div class="action-card">
                         <h3>Поиск кейсов</h3>
                         <p>Найти клиентов по типу проблемы</p>
                         <a href="/psychologist/cases" class="btn btn-outline">Найти кейсы</a>
+                    </div>
+                    <div class="action-card">
+                        <h3>Вопросы пользователей</h3>
+                        <p>Ответить на анонимные вопросы</p>
+                        <a href="/psychologist/questions" class="btn btn-outline">Вопросы</a>
+                    </div>
+                    <div class="action-card">
+                        <h3>Мои мероприятия</h3>
+                        <p>Создать группу, семинар, тренинг</p>
+                        <a href="/psychologist/events" class="btn btn-outline">Мероприятия</a>
                     </div>
                     <div class="action-card">
                         <h3>Мои интервизии</h3>
@@ -88,6 +98,11 @@ ob_start();
                         <h3>Интервизии</h3>
                         <p>Управление группами и сессиями</p>
                         <a href="/admin/intervision/groups" class="btn btn-primary">Управление</a>
+                    </div>
+                    <div class="action-card">
+                        <h3>Верификация дипломов</h3>
+                        <p>Проверить загруженные документы</p>
+                        <a href="/admin/verification" class="btn btn-outline">Проверить</a>
                     </div>
                 </div>
             </div>

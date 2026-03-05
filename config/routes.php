@@ -20,6 +20,12 @@ return [
     // Защищенные маршруты
     ['method' => 'GET', 'uri' => '/dashboard', 'action' => 'DashboardController@index'],
 
+    // ==================== АДМИН-ПАНЕЛЬ ====================
+    ['method' => 'GET',  'uri' => '/admin',                      'action' => 'Admin\DashboardController@index'],
+    ['method' => 'GET',  'uri' => '/admin/users',                'action' => 'Admin\UserController@index'],
+    ['method' => 'POST', 'uri' => '/admin/users/{id}/block',     'action' => 'Admin\UserController@block'],
+    ['method' => 'POST', 'uri' => '/admin/users/{id}/unblock',   'action' => 'Admin\UserController@unblock'],
+
     // ==================== ИНТЕРВИЗИИ (Админ) ====================
 
     // Группы
@@ -66,8 +72,37 @@ return [
     // Редактирование профиля (должно быть ДО /psychologists/{id})
     ['method' => 'GET',  'uri' => '/psychologist/profile/edit', 'action' => 'PsychologistController@editProfile'],
     ['method' => 'POST', 'uri' => '/psychologist/profile/update', 'action' => 'PsychologistController@updateProfile'],
+    ['method' => 'POST', 'uri' => '/psychologist/diploma/upload', 'action' => 'PsychologistController@uploadDiploma'],
+    ['method' => 'POST', 'uri' => '/psychologist/profile/confirm-price', 'action' => 'PsychologistController@confirmPrice'],
 
     // Публичный каталог
     ['method' => 'GET',  'uri' => '/psychologists', 'action' => 'PsychologistController@index'],
     ['method' => 'GET',  'uri' => '/psychologists/{id}', 'action' => 'PsychologistController@show'],
+
+    // ==================== НАСТРОЙКИ ====================
+    ['method' => 'GET',  'uri' => '/settings', 'action' => 'SettingsController@index'],
+    ['method' => 'POST', 'uri' => '/settings/timezone', 'action' => 'SettingsController@saveTimezone'],
+
+    // ==================== ПУБЛИЧНЫЕ ВОПРОСЫ ====================
+    ['method' => 'GET',  'uri' => '/ask', 'action' => 'QuestionController@askForm'],
+    ['method' => 'POST', 'uri' => '/ask', 'action' => 'QuestionController@askSubmit'],
+    ['method' => 'GET',  'uri' => '/questions', 'action' => 'QuestionController@publicIndex'],
+    ['method' => 'GET',  'uri' => '/psychologist/questions', 'action' => 'QuestionController@psychologistIndex'],
+    ['method' => 'POST', 'uri' => '/psychologist/questions/{id}/answer', 'action' => 'QuestionController@answer'],
+
+    // ==================== МЕРОПРИЯТИЯ ====================
+    ['method' => 'GET',  'uri' => '/events', 'action' => 'EventController@index'],
+    ['method' => 'GET',  'uri' => '/events/{id}', 'action' => 'EventController@show'],
+    ['method' => 'GET',  'uri' => '/psychologist/events', 'action' => 'EventController@myEvents'],
+    ['method' => 'GET',  'uri' => '/psychologist/events/create', 'action' => 'EventController@create'],
+    ['method' => 'POST', 'uri' => '/psychologist/events', 'action' => 'EventController@store'],
+
+    // ==================== ВЕРИФИКАЦИЯ ДИПЛОМОВ (Админ) ====================
+    ['method' => 'GET',  'uri' => '/admin/verification', 'action' => 'Admin\VerificationController@index'],
+    ['method' => 'POST', 'uri' => '/admin/verification/{id}/approve', 'action' => 'Admin\VerificationController@approve'],
+    ['method' => 'POST', 'uri' => '/admin/verification/{id}/reject', 'action' => 'Admin\VerificationController@reject'],
+
+    // ==================== БИЗНЕС-СТРАНИЦЫ ====================
+    ['method' => 'GET', 'uri' => '/business', 'action' => 'HomeController@business'],
+    ['method' => 'GET', 'uri' => '/medical',  'action' => 'HomeController@medical'],
 ];

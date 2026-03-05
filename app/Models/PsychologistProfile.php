@@ -21,7 +21,7 @@ class PsychologistProfile extends Model
      */
     public function getPublishedProfiles(array $filters = []): array
     {
-        $sql = "SELECT pp.*, u.name as psychologist_name, u.created_at as registered_at
+        $sql = "SELECT pp.*, u.name as psychologist_name, u.gender as user_gender, u.created_at as registered_at
                 FROM {$this->table} pp
                 JOIN users u ON pp.user_id = u.id
                 WHERE pp.is_published = 1 AND u.is_blocked = 0";
@@ -42,7 +42,27 @@ class PsychologistProfile extends Model
             $params['search2'] = '%' . $filters['search'] . '%';
         }
 
-        $sql .= " ORDER BY pp.updated_at DESC";
+        if (!empty($filters['gender'])) {
+            $sql .= " AND u.gender = :gender";
+            $params['gender'] = $filters['gender'];
+        }
+
+        if (!empty($filters['work_format'])) {
+            $sql .= " AND (pp.work_format = :work_format OR pp.work_format = 'BOTH')";
+            $params['work_format'] = $filters['work_format'];
+        }
+
+        if (!empty($filters['language'])) {
+            $sql .= " AND FIND_IN_SET(:language, REPLACE(pp.languages, ', ', ',')) > 0";
+            $params['language'] = $filters['language'];
+        }
+
+        if (!empty($filters['price_max'])) {
+            $sql .= " AND (pp.hourly_rate_min IS NULL OR pp.hourly_rate_min <= :price_max)";
+            $params['price_max'] = (float) $filters['price_max'];
+        }
+
+        $sql .= " ORDER BY pp.diploma_verified DESC, pp.updated_at DESC";
 
         return Database::query($sql, $params);
     }
@@ -52,7 +72,7 @@ class PsychologistProfile extends Model
      */
     public function getProfileWithDetails(int $id): ?array
     {
-        $sql = "SELECT pp.*, u.name as psychologist_name, u.created_at as registered_at
+        $sql = "SELECT pp.*, u.name as psychologist_name, u.gender as user_gender, u.created_at as registered_at
                 FROM {$this->table} pp
                 JOIN users u ON pp.user_id = u.id
                 WHERE pp.id = :id AND pp.is_published = 1 AND u.is_blocked = 0";
@@ -116,6 +136,72 @@ class PsychologistProfile extends Model
         return [
             'response_count' => (int) ($responses['cnt'] ?? 0),
             'sessions_attended_month' => (int) ($intervisions['cnt'] ?? 0),
+        ];
+    }
+
+    /**
+     * Нужно ли подтверждение актуальности цен (> 30 дней или никогда не подтверждалось)
+     */
+    public function needsPriceConfirmation(int $profileId): bool
+    {
+        $row = Database::queryOne(
+            "SELECT price_confirmed_at FROM {$this->table} WHERE id = :id",
+            ['id' => $profileId]
+        );
+
+        if (!$row || $row['price_confirmed_at'] === null) {
+            return true;
+        }
+
+        $confirmedAt = strtotime($row['price_confirmed_at']);
+        return (time() - $confirmedAt) > (30 * 24 * 3600);
+    }
+
+    /**
+     * Подтвердить актуальность цен
+     */
+    public function confirmPrice(int $profileId): void
+    {
+        Database::execute(
+            "UPDATE {$this->table} SET price_confirmed_at = NOW() WHERE id = :id",
+            ['id' => $profileId]
+        );
+    }
+
+    /**
+     * Рассчитать заполненность профиля и список рекомендаций
+     * Возвращает ['percent' => int, 'missing' => string[]]
+     */
+    public function getProfileCompleteness(array $profile, array $specializations): array
+    {
+        $checks = [
+            'bio'                  => [!empty($profile['bio']),                'Заполните раздел «О себе»'],
+            'methods'              => [!empty($profile['methods_description']), 'Опишите методы и подходы'],
+            'education'            => [!empty($profile['education']),           'Добавьте информацию об образовании'],
+            'experience'           => [!empty($profile['experience_description']), 'Опишите опыт работы'],
+            'specializations'      => [!empty($specializations),               'Выберите хотя бы одну специализацию'],
+            'rate'                 => [$profile['hourly_rate_min'] || $profile['hourly_rate_max'], 'Укажите стоимость сессии'],
+            'photo'                => [!empty($profile['photo_url']),           'Загрузите фото профиля'],
+            'diploma'              => [!empty($profile['diploma_scan_url']),    'Загрузите скан диплома для верификации'],
+            'format'               => [!empty($profile['work_format']),         'Укажите формат работы'],
+            'price_confirmed'      => [!$this->needsPriceConfirmation($profile['id']), 'Подтвердите актуальность стоимости'],
+        ];
+
+        $total = count($checks);
+        $done = 0;
+        $missing = [];
+
+        foreach ($checks as [$passed, $hint]) {
+            if ($passed) {
+                $done++;
+            } else {
+                $missing[] = $hint;
+            }
+        }
+
+        return [
+            'percent' => (int) round($done / $total * 100),
+            'missing' => $missing,
         ];
     }
 }

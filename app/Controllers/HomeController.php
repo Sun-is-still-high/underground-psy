@@ -34,4 +34,20 @@ class HomeController extends Controller
     {
         $this->view('about');
     }
+
+    /**
+     * Лендинг "Психология для бизнеса"
+     */
+    public function business(): void
+    {
+        $this->view('home/business');
+    }
+
+    /**
+     * Лендинг "Медицинским учреждениям"
+     */
+    public function medical(): void
+    {
+        $this->view('home/medical');
+    }
 }
