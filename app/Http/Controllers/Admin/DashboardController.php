@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -39,6 +40,9 @@ class DashboardController extends Controller
         // Заблокированные пользователи
         $blockedUsers = User::where('is_blocked', true)->count();
 
+        // Задания для троек на модерации
+        $pendingTasks = Task::where('status', 'pending')->count();
+
         return view('admin.dashboard', compact(
             'byRole',
             'newUsers',
@@ -47,6 +51,7 @@ class DashboardController extends Controller
             'upcomingEvents',
             'pendingVerification',
             'blockedUsers',
+            'pendingTasks',
         ));
     }
 }

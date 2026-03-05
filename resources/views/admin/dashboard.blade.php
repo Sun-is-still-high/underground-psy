@@ -51,6 +51,15 @@
                 <div class="admin-nav-card__title">Интервизии</div>
                 <div class="admin-nav-card__desc">Группы и сессии</div>
             </a>
+            <a href="{{ route('admin.tasks.index') }}" class="admin-nav-card {{ $pendingTasks > 0 ? 'admin-nav-card--alert' : '' }}">
+                <div class="admin-nav-card__title">
+                    Задания (тройки)
+                    @if($pendingTasks > 0)
+                        <span class="badge badge-warning">{{ $pendingTasks }}</span>
+                    @endif
+                </div>
+                <div class="admin-nav-card__desc">Модерация предложенных заданий</div>
+            </a>
             @if ($pendingVerification > 0)
             <div class="admin-nav-card admin-nav-card--alert">
                 <div class="admin-nav-card__title">

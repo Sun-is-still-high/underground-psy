@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Underground Psy')</title>
     <link rel="stylesheet" href="/css/style.css">
+    @livewireStyles
 </head>
 <body>
     <header class="header">
@@ -14,6 +15,7 @@
 
                 <nav class="nav">
                     <a href="{{ route('psychologists.index') }}" class="nav-link">Психологи</a>
+                    <a href="{{ route('triads.slots.index') }}" class="nav-link">Тройки</a>
                     <a href="{{ route('about') }}" class="nav-link">О проекте</a>
                     @auth
                         @if (auth()->user()->isAdmin())
@@ -52,6 +54,8 @@
     <main class="main">
         @yield('content')
     </main>
+
+    @livewireScripts
 
     <footer class="footer">
         <div class="container">

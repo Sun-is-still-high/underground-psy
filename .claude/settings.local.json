@@ -15,7 +15,12 @@
       "Bash(xargs head -100)",
       "Bash(php artisan migrate --pretend)",
       "Bash(where composer)",
-      "Bash(php artisan migrate --force)"
+      "Bash(php artisan migrate --force)",
+      "Bash(composer require livewire/livewire)",
+      "Bash(php artisan route:list --path=triads)",
+      "Bash(ls /c/OSPanel/home/underground-psy/database/*.sqlite)",
+      "Bash(php -r \"echo phpversion\\(\\);\")",
+      "Bash(php artisan config:clear)"
     ]
   }
 }

@@ -70,4 +70,45 @@ class User extends Authenticatable
         return $this->hasMany(IntervisionParticipant::class, 'psychologist_id');
     }
 
+    // Тройки
+    public function slotParticipations()
+    {
+        return $this->hasMany(SlotParticipant::class);
+    }
+
+    public function createdSlots()
+    {
+        return $this->hasMany(Slot::class, 'creator_id');
+    }
+
+    public function proposedTasks()
+    {
+        return $this->hasMany(Task::class, 'author_id');
+    }
+
+    public function triadNotifications()
+    {
+        return $this->hasMany(TriadNotification::class);
+    }
+
+    /** Счётчик троек по ролям (только completed + confirmed) */
+    public function triadCounts(): array
+    {
+        $counts = $this->slotParticipations()
+            ->where('status', 'active')
+            ->where('confirmed_completion', true)
+            ->whereHas('slot', fn($q) => $q->where('status', 'completed'))
+            ->selectRaw('role, count(*) as cnt')
+            ->groupBy('role')
+            ->pluck('cnt', 'role')
+            ->toArray();
+
+        return [
+            'therapist' => $counts['therapist'] ?? 0,
+            'client'    => $counts['client'] ?? 0,
+            'observer'  => $counts['observer'] ?? 0,
+            'total'     => array_sum($counts),
+        ];
+    }
+
 }
