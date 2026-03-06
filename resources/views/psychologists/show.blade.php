@@ -18,7 +18,40 @@
             @endif
         </div>
 
-        <div class="warning-box">
+        @if ($profile->methods->isNotEmpty())
+            <div class="profile-specializations" style="margin-top:8px;">
+                @foreach ($profile->methods as $m)
+                    <span class="badge" style="background:#e0f2fe;color:#075985;">{{ $m->name }}</span>
+                @endforeach
+            </div>
+        @endif
+
+        @if ($profile->work_format)
+            <p style="color:#6b7280;font-size:0.9rem;margin-top:6px;">
+                @if ($profile->work_format === 'online') Онлайн
+                @elseif ($profile->work_format === 'offline') Офлайн{{ $profile->city ? ', ' . $profile->city : '' }}
+                @else Онлайн и офлайн{{ $profile->city ? ', ' . $profile->city : '' }}
+                @endif
+            </p>
+        @endif
+
+        @php
+            $triads = $profile->user->triadCounts();
+            $intervisions = $profile->user->intervisionCount();
+        @endphp
+        <div class="psy-metrics" style="margin-top:12px;">
+            @if ($triads['total'] > 0)
+                <span class="psy-metric">🔺 Тройки: {{ $triads['total'] }}
+                    (терапевт: {{ $triads['therapist'] }}, клиент: {{ $triads['client'] }}, наблюдатель: {{ $triads['observer'] }})
+                </span>
+            @endif
+            @if ($intervisions > 0)
+                <span class="psy-metric">👥 Интервизии: {{ $intervisions }}</span>
+            @endif
+            <span class="psy-metric">📅 На платформе с {{ $profile->user->created_at->format('d.m.Y') }}</span>
+        </div>
+
+        <div class="warning-box" style="margin-top:16px;">
             <strong>Обратите внимание:</strong> это начинающий специалист.
             Платформа Underground Psy создана для развития молодых психологов.
         </div>

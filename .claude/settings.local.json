@@ -20,7 +20,18 @@
       "Bash(php artisan route:list --path=triads)",
       "Bash(ls /c/OSPanel/home/underground-psy/database/*.sqlite)",
       "Bash(php -r \"echo phpversion\\(\\);\")",
-      "Bash(php artisan config:clear)"
+      "Bash(php artisan config:clear)",
+      "Bash(php artisan route:list --path=triads/slots)",
+      "Bash(php artisan tinker --execute=\"echo \\\\App\\\\Models\\\\User::where\\(''role'',''ADMIN''\\)->get\\(\\)->pluck\\(''email'',''role''\\)->toJson\\(\\);\")",
+      "Bash(php artisan tinker --execute=\"echo \\\\App\\\\Models\\\\User::select\\(''id'',''email'',''role''\\)->get\\(\\)->toJson\\(\\);\")",
+      "Bash(php artisan tinker --execute=\"\\\\App\\\\Models\\\\User::where\\(''email'',''test@test.me''\\)->update\\([''role''=>''ADMIN'']\\); echo ''done'';\")",
+      "Bash(php artisan tinker --execute=\"echo implode\\('', '', DB::select\\(''SHOW TABLES''\\) |> array_map\\(fn\\($t\\) => array_values\\(\\(array\\)$t\\)[0], $result\\)\\);\")",
+      "Bash(php artisan tinker --execute=\"$tables = DB::select\\(''SHOW TABLES''\\); foreach\\($tables as $t\\) { echo array_values\\(\\(array\\)$t\\)[0].PHP_EOL; }\")",
+      "Bash(php artisan migrate:status)",
+      "Bash(php artisan route:list --name=psychologist.diploma,admin.verification --columns=method,uri,name)",
+      "Bash(php -r \"require ''vendor/autoload.php''; echo ''OK'';\")",
+      "Bash(php artisan notifications:table)",
+      "Bash(composer require laravel/socialite socialiteproviders/vkontakte socialiteproviders/yandex)"
     ]
   }
 }

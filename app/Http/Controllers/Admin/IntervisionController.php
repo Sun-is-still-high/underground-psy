@@ -8,6 +8,7 @@ use App\Models\IntervisionGroup;
 use App\Models\IntervisionParticipant;
 use App\Models\IntervisionSession;
 use App\Models\User;
+use App\Services\CanConsultService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -211,7 +212,7 @@ class IntervisionController extends Controller
 
     public function saveAttendance(Request $request, int $id): RedirectResponse
     {
-        $session = IntervisionSession::findOrFail($id);
+        $session = IntervisionSession::with('attendance.participant.psychologist')->findOrFail($id);
         $attended = $request->input('attended', []);
 
         foreach ($session->attendance as $record) {
@@ -220,6 +221,14 @@ class IntervisionController extends Controller
                 'marked_at' => now(),
                 'marked_by' => $request->user()->id,
             ]);
+        }
+
+        // Пересчитать can_consult для всех участников сессии
+        $service = new CanConsultService();
+        foreach ($session->attendance as $record) {
+            if ($record->participant?->psychologist) {
+                $service->recalculate($record->participant->psychologist);
+            }
         }
 
         return redirect()->route('admin.intervision.sessions.show', $id)->with('success', 'Посещаемость сохранена');

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\OAuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CaseController;
@@ -12,10 +13,19 @@ use App\Http\Controllers\Admin\IntervisionController;
 use App\Http\Controllers\Admin\TaskController as AdminTaskController;
 use App\Http\Controllers\Triads\TaskController as TriadTaskController;
 use App\Http\Controllers\Triads\SlotController;
+use App\Http\Controllers\Triads\SlotInvitationController;
+use App\Http\Controllers\Psychologist\DiplomaController;
 use App\Http\Controllers\Admin\VerificationController as AdminVerification;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController as AdminUsers;
+use App\Http\Controllers\Admin\MethodController as AdminMethods;
 use Illuminate\Support\Facades\Route;
+
+// OAuth (только для психологов)
+Route::get('/auth/{provider}/redirect', [OAuthController::class, 'redirect'])->name('oauth.redirect');
+Route::get('/auth/{provider}/callback', [OAuthController::class, 'callback'])->name('oauth.callback');
+Route::get('/auth/diploma', [OAuthController::class, 'diplomaForm'])->name('oauth.diploma.form');
+Route::post('/auth/diploma', [OAuthController::class, 'diplomaStore'])->name('oauth.diploma.store');
 
 // Публичные страницы
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -44,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/gender', [SettingsController::class, 'saveGender'])->name('settings.gender');
 
     // ==================== КЛИЕНТ ====================
-    Route::middleware(['role:CLIENT'])->prefix('client')->name('client.')->group(function () {
+    Route::middleware(['role:CLIENT', 'verified'])->prefix('client')->name('client.')->group(function () {
         Route::get('/cases', [CaseController::class, 'index'])->name('cases.index');
         Route::get('/cases/create', [CaseController::class, 'create'])->name('cases.create');
         Route::post('/cases', [CaseController::class, 'store'])->name('cases.store');
@@ -60,10 +70,21 @@ Route::middleware(['auth'])->group(function () {
 
         // Слоты — лента и детали доступны всем авторизованным
         Route::get('/slots', [SlotController::class, 'index'])->name('slots.index');
+        // create должен быть ДО {slot}, иначе Laravel проглотит его как параметр
+        Route::get('/slots/create', [SlotController::class, 'create'])->middleware(['role:PSYCHOLOGIST'])->name('slots.create');
         Route::get('/slots/{slot}', [SlotController::class, 'show'])->name('slots.show');
+
+        // Страница сессии (только активные участники)
+        Route::get('/slots/{slot}/session', [SlotController::class, 'session'])->name('slots.session');
+        Route::post('/slots/{slot}/confirm', [SlotController::class, 'confirm'])->name('slots.confirm');
+        Route::post('/slots/{slot}/reassign', [SlotController::class, 'reassign'])->name('slots.reassign');
 
         // Мои тройки (участие + созданные)
         Route::get('/my-slots', [SlotController::class, 'mySlots'])->name('my-slots');
+
+        // Приглашения — принять/отклонить (любой авторизованный, invitee проверяется в контроллере)
+        Route::post('/slots/{slot}/invitations/{invitation}/accept', [SlotInvitationController::class, 'accept'])->name('slots.invitations.accept');
+        Route::post('/slots/{slot}/invitations/{invitation}/decline', [SlotInvitationController::class, 'decline'])->name('slots.invitations.decline');
 
         // Только психологи
         Route::middleware(['role:PSYCHOLOGIST'])->group(function () {
@@ -75,12 +96,19 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/tasks/{task}', [TriadTaskController::class, 'update'])->name('tasks.update');
 
             // Слоты: создание, запись, отписка, отмена
-            Route::get('/slots/create', [SlotController::class, 'create'])->name('slots.create');
             Route::post('/slots', [SlotController::class, 'store'])->name('slots.store');
             Route::delete('/slots/{slot}', [SlotController::class, 'cancel'])->name('slots.cancel');
             Route::post('/slots/{slot}/join', [SlotController::class, 'join'])->name('slots.join');
             Route::delete('/slots/{slot}/leave', [SlotController::class, 'leave'])->name('slots.leave');
+
+            // Приглашения — отправить (только психолог-создатель)
+            Route::post('/slots/{slot}/invitations', [SlotInvitationController::class, 'store'])->name('slots.invitations.store');
         });
+    });
+
+    // ==================== ПСИХОЛОГ: диплом (доступно при pending_verification) ====================
+    Route::middleware(['role:PSYCHOLOGIST'])->prefix('psychologist')->name('psychologist.')->group(function () {
+        Route::post('/diploma/reupload', [DiplomaController::class, 'reupload'])->name('diploma.reupload');
     });
 
     // ==================== ПСИХОЛОГ ====================
@@ -98,6 +126,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/profile/update', [PsychologistController::class, 'updateProfile'])->name('profile.update');
     });
 
+    // ==================== МОДЕРАТОР + ADMIN: верификация дипломов ====================
+    Route::middleware(['role:ADMIN,MODERATOR'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/verification', [AdminVerification::class, 'index'])->name('verification.index');
+        Route::get('/verification/{profile}/diploma', [AdminVerification::class, 'showDiploma'])->name('verification.diploma');
+        Route::post('/verification/{profile}/approve', [AdminVerification::class, 'approve'])->name('verification.approve');
+        Route::post('/verification/{profile}/reject', [AdminVerification::class, 'reject'])->name('verification.reject');
+    });
+
     // ==================== ADMIN ====================
     Route::middleware(['role:ADMIN'])->prefix('admin')->name('admin.')->group(function () {
         // Главная панель и пользователи
@@ -105,11 +141,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users', [AdminUsers::class, 'index'])->name('users.index');
         Route::post('/users/{user}/block', [AdminUsers::class, 'block'])->name('users.block');
         Route::post('/users/{user}/unblock', [AdminUsers::class, 'unblock'])->name('users.unblock');
+        Route::post('/users/{user}/make-moderator', [AdminUsers::class, 'makeModerator'])->name('users.make-moderator');
+        Route::post('/users/{user}/remove-moderator', [AdminUsers::class, 'removeModerator'])->name('users.remove-moderator');
 
-        // Верификация дипломов
-        Route::get('/verification', [AdminVerification::class, 'index'])->name('verification.index');
-        Route::post('/verification/{profile}/approve', [AdminVerification::class, 'approve'])->name('verification.approve');
-        Route::post('/verification/{profile}/reject', [AdminVerification::class, 'reject'])->name('verification.reject');
+        // Справочник методов работы
+        Route::prefix('methods')->name('methods.')->group(function () {
+            Route::get('/', [AdminMethods::class, 'index'])->name('index');
+            Route::post('/', [AdminMethods::class, 'store'])->name('store');
+            Route::put('/{method}', [AdminMethods::class, 'update'])->name('update');
+            Route::delete('/{method}', [AdminMethods::class, 'destroy'])->name('destroy');
+        });
 
         // Модерация заданий для троек
         Route::prefix('tasks')->name('tasks.')->group(function () {

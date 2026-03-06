@@ -9,14 +9,19 @@
         <a href="{{ route('admin.dashboard') }}" class="btn btn-outline btn-sm">← Панель</a>
     </div>
 
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
     {{-- Фильтры --}}
     <form method="GET" action="{{ route('admin.users.index') }}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
         <input type="text" name="q" value="{{ request('q') }}"
                placeholder="Имя или email" class="form-control" style="max-width:260px;">
-        <select name="role" class="form-control" style="max-width:160px;">
+        <select name="role" class="form-control" style="max-width:180px;">
             <option value="">Все роли</option>
             <option value="CLIENT"       @selected(request('role') === 'CLIENT')>Клиенты</option>
             <option value="PSYCHOLOGIST" @selected(request('role') === 'PSYCHOLOGIST')>Психологи</option>
+            <option value="MODERATOR"    @selected(request('role') === 'MODERATOR')>Модераторы</option>
             <option value="ADMIN"        @selected(request('role') === 'ADMIN')>Администраторы</option>
         </select>
         <button type="submit" class="btn btn-primary">Найти</button>
@@ -36,7 +41,7 @@
                         <th>Имя</th>
                         <th>Email</th>
                         <th>Роль</th>
-                        <th>Статус</th>
+                        <th>Аккаунт</th>
                         <th>Зарегистрирован</th>
                         <th>Действия</th>
                     </tr>
@@ -46,22 +51,30 @@
                     <tr class="{{ $user->is_blocked ? 'row--blocked' : '' }}">
                         <td>{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
                         <td>
-                            @php $roleLabels = ['CLIENT' => 'Клиент', 'PSYCHOLOGIST' => 'Психолог', 'ADMIN' => 'Админ']; @endphp
+                            {{ $user->email }}
+                            @if (!$user->email_verified_at)
+                                <span class="badge badge-warning" title="Email не подтверждён">!</span>
+                            @endif
+                        </td>
+                        <td>
+                            @php $roleLabels = ['CLIENT' => 'Клиент', 'PSYCHOLOGIST' => 'Психолог', 'MODERATOR' => 'Модератор', 'ADMIN' => 'Админ']; @endphp
                             {{ $roleLabels[$user->role] ?? $user->role }}
                         </td>
                         <td>
                             @if ($user->is_blocked)
                                 <span class="badge badge-error" title="{{ $user->blocked_reason }}">Заблокирован</span>
+                            @elseif ($user->status === 'pending_verification')
+                                <span class="badge badge-warning">Ожидает верификации</span>
                             @else
                                 <span class="badge badge-success">Активен</span>
                             @endif
                         </td>
                         <td>{{ $user->created_at->format('d.m.Y') }}</td>
-                        <td>
+                        <td style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+                            {{-- Блокировка --}}
                             @if ($user->is_blocked)
-                                <form action="{{ route('admin.users.unblock', $user) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.users.unblock', $user) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn btn-outline btn-sm">Разблокировать</button>
                                 </form>
@@ -70,6 +83,25 @@
                                         onclick="showBlockForm({{ $user->id }}, '{{ addslashes($user->name) }}')">
                                     Заблокировать
                                 </button>
+                            @endif
+
+                            {{-- Назначение модератора --}}
+                            @if ($user->isPsychologist())
+                                <form action="{{ route('admin.users.make-moderator', $user) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline btn-sm"
+                                            onclick="return confirm('Назначить {{ addslashes($user->name) }} модератором?')">
+                                        + Модератор
+                                    </button>
+                                </form>
+                            @elseif ($user->isModerator())
+                                <form action="{{ route('admin.users.remove-moderator', $user) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline btn-sm"
+                                            onclick="return confirm('Снять роль модератора с {{ addslashes($user->name) }}?')">
+                                        − Модератор
+                                    </button>
+                                </form>
                             @endif
                         </td>
                     </tr>
@@ -121,13 +153,14 @@ function closeBlockModal() {
 <style>
 .admin-table { width:100%; border-collapse:collapse; }
 .admin-table th,
-.admin-table td { padding:10px 12px; text-align:left; border-bottom:1px solid #e5e7eb; font-size:.9rem; }
+.admin-table td { padding:10px 12px; text-align:left; border-bottom:1px solid #e5e7eb; font-size:.9rem; vertical-align:middle; }
 .admin-table th { background:#f9fafb; font-weight:600; }
 .row--blocked td { color:#9ca3af; }
 
 .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:.75rem; font-weight:600; }
 .badge-success { background:#d1fae5; color:#065f46; }
 .badge-error   { background:#fee2e2; color:#991b1b; }
+.badge-warning { background:#fef3c7; color:#92400e; }
 
 .btn-danger { background:#ef4444; color:#fff; border:none; }
 .btn-danger:hover { background:#dc2626; }

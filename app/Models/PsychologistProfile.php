@@ -16,14 +16,24 @@ class PsychologistProfile extends Model
         'hourly_rate_max',
         'is_published',
         'diploma_scan_url',
+        'diploma_number',
+        'diploma_year',
+        'diploma_institution',
         'diploma_verified',
+        'diploma_rejection_comment',
+        'can_consult',
+        'work_format',
+        'city',
+        'languages',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_published' => 'boolean',
+            'is_published'    => 'boolean',
             'diploma_verified' => 'boolean',
+            'can_consult'     => 'boolean',
+            'languages'       => 'array',
         ];
     }
 
@@ -40,6 +50,11 @@ class PsychologistProfile extends Model
     public function problemTypes()
     {
         return $this->belongsToMany(ProblemType::class, 'psychologist_specializations', 'profile_id', 'problem_type_id');
+    }
+
+    public function methods()
+    {
+        return $this->belongsToMany(Method::class, 'psychologist_methods', 'psychologist_profile_id', 'method_id');
     }
 
     // TODO: перенести needsPriceConfirmation, confirmPrice, getProfileCompleteness

@@ -25,6 +25,19 @@
                 <button type="submit" class="btn btn-primary btn-block">Войти</button>
             </form>
 
+            <div class="auth-divider" style="text-align:center;margin:1.25rem 0;color:#9ca3af;font-size:0.85rem;">
+                — или войдите как психолог через —
+            </div>
+
+            <div style="display:flex;gap:12px;justify-content:center;margin-bottom:1rem;">
+                <a href="{{ route('oauth.redirect', 'vkontakte') }}" class="btn btn-outline" style="flex:1;text-align:center;">
+                    ВКонтакте
+                </a>
+                <a href="{{ route('oauth.redirect', 'yandex') }}" class="btn btn-outline" style="flex:1;text-align:center;">
+                    Яндекс
+                </a>
+            </div>
+
             <div class="auth-footer">
                 <p>Нет аккаунта? <a href="{{ route('register') }}">Зарегистрироваться</a></p>
             </div>

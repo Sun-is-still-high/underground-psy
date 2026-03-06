@@ -1910,4 +1910,480 @@ body {
     .slot-show-grid {
         grid-template-columns: 1fr;
     }
+
+    .session-layout {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .session-sidebar {
+        width: 100%;
+        max-height: none;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .session-video {
+        height: 400px;
+    }
+}
+
+/* =============================================
+   СТРАНИЦА СЕССИИ
+   ============================================= */
+
+/* Полноэкранный layout сессии */
+.session-layout {
+    display: flex;
+    height: calc(100vh - 80px); /* вычитаем высоту шапки */
+    overflow: hidden;
+}
+
+/* Левая боковая панель */
+.session-sidebar {
+    width: 340px;
+    flex-shrink: 0;
+    background: var(--white);
+    border-right: 1px solid var(--border-color);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1.25rem;
+}
+
+.session-sidebar-header {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.session-task-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.session-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Таймер */
+.session-timer-block {
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+.session-timer-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+
+.session-timer {
+    font-size: 2rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary-color);
+    letter-spacing: 0.05em;
+}
+
+.session-timer--soon {
+    color: #f59e0b;
+}
+
+.session-timer--expired {
+    color: var(--error-color);
+}
+
+.session-timer-sub {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+}
+
+/* Details / Summary */
+.session-details {
+    border-top: 1px solid var(--border-color);
+    padding: 0.75rem 0;
+}
+
+.session-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    user-select: none;
+    outline: none;
+}
+
+.session-details summary:hover {
+    color: var(--primary-color);
+}
+
+.session-details-body {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Инструкции */
+.session-instructions {
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.instruction-block {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--bg-color);
+}
+
+.instruction-block--mine {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+
+.instruction-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.instruction-text {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.instruction-text--hidden {
+    color: var(--text-light);
+    font-style: italic;
+}
+
+/* Участники в сессии */
+.session-participants {
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.session-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+}
+
+/* Блок подтверждения */
+.session-confirm-block {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.session-confirm-block--waiting {
+    text-align: center;
+}
+
+/* Правая часть — видео */
+.session-video {
+    flex: 1;
+    background: #1a1a2e;
+    position: relative;
+    overflow: hidden;
+}
+
+.jitsi-container {
+    width: 100%;
+    height: 100%;
+}
+
+.jitsi-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.jitsi-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+}
+
+/* Скрываем шапку/подвал на странице сессии для большего экрана */
+body:has(.session-layout) .footer {
+    display: none;
+}
+
+body:has(.session-layout) .main {
+    padding: 0;
+}
+
+/* =============================================
+   ЧАТ СЛОТА
+   ============================================= */
+.slot-chat {
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    margin-bottom: 1rem;
+}
+
+.slot-chat-header {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.slot-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 320px;
+    min-height: 120px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.session-sidebar .slot-chat-messages {
+    max-height: 200px;
+}
+
+.chat-empty {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    align-self: flex-start;
+}
+
+.chat-message--mine {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.chat-message-meta {
+    display: flex;
+    gap: 0.4rem;
+    align-items: baseline;
+    margin-bottom: 0.2rem;
+}
+
+.chat-message--mine .chat-message-meta {
+    flex-direction: row-reverse;
+}
+
+.chat-message-author {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.chat-message-time {
+    font-size: 0.72rem;
+    color: var(--text-light);
+}
+
+.chat-message-body {
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.875rem;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.chat-message--mine .chat-message-body {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.slot-chat-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.slot-chat-form .chat-input {
+    flex: 1;
+    font-size: 0.875rem;
+    padding: 0.4rem 0.65rem;
+}
+
+/* =============================================
+   КОЛОКОЛЬЧИК УВЕДОМЛЕНИЙ
+   ============================================= */
+.notification-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.bell-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    padding: 0.25rem 0.4rem;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+}
+
+.bell-btn:hover .bell-icon {
+    opacity: 0.75;
+}
+
+.bell-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+}
+
+.bell-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 320px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.bell-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 0.875rem;
+    background: var(--bg-secondary);
+}
+
+.bell-mark-all {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.78rem;
+    color: var(--primary-color);
+    padding: 0;
+}
+
+.bell-mark-all:hover {
+    text-decoration: underline;
+}
+
+.bell-item {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.bell-item:last-child {
+    border-bottom: none;
+}
+
+.bell-item:hover {
+    background: var(--bg-secondary);
+}
+
+.bell-item--unread {
+    background: rgba(99, 102, 241, 0.06);
+    border-left: 3px solid var(--primary-color);
+}
+
+.bell-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+
+.bell-item-sub {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bell-item-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.bell-item-link {
+    display: inline-block;
+    margin-top: 0.25rem;
+    font-size: 0.78rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.bell-item-link:hover {
+    text-decoration: underline;
+}
+
+.bell-empty {
+    padding: 1.25rem 1rem;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.bell-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
 }

@@ -60,15 +60,19 @@
                 </div>
                 <div class="admin-nav-card__desc">Модерация предложенных заданий</div>
             </a>
-            @if ($pendingVerification > 0)
-            <div class="admin-nav-card admin-nav-card--alert">
+            <a href="{{ route('admin.verification.index') }}" class="admin-nav-card {{ $pendingVerification > 0 ? 'admin-nav-card--alert' : '' }}">
                 <div class="admin-nav-card__title">
                     Верификация дипломов
-                    <span class="badge badge-warning">{{ $pendingVerification }}</span>
+                    @if ($pendingVerification > 0)
+                        <span class="badge badge-warning">{{ $pendingVerification }}</span>
+                    @endif
                 </div>
                 <div class="admin-nav-card__desc">Ожидают проверки документов</div>
-            </div>
-            @endif
+            </a>
+            <a href="{{ route('admin.methods.index') }}" class="admin-nav-card">
+                <div class="admin-nav-card__title">Методы работы</div>
+                <div class="admin-nav-card__desc">Справочник методов психологов</div>
+            </a>
         </div>
     </div>
 </div>

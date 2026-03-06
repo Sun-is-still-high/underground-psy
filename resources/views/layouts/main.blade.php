@@ -22,6 +22,7 @@
                             <a href="{{ route('admin.dashboard') }}" class="nav-link nav-link--admin">Админ</a>
                         @endif
                         <a href="{{ route('dashboard') }}" class="nav-link">Личный кабинет</a>
+                        @livewire('notification-bell')
                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn btn-outline">Выйти</button>
@@ -56,6 +57,7 @@
     </main>
 
     @livewireScripts
+    @stack('scripts')
 
     <footer class="footer">
         <div class="container">

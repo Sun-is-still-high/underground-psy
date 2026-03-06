@@ -24,19 +24,33 @@
                     <div class="verification-info">
                         <strong>{{ $profile->user->name }}</strong>
                         <span class="text-muted">{{ $profile->user->email }}</span>
-                        <a href="{{ route('psychologists.show', $profile->id) }}" target="_blank" class="btn btn-outline btn-sm">Профиль</a>
+                        <span class="text-muted">Статус: {{ $profile->user->status === 'active' ? 'Активен' : 'Ожидает верификации' }}</span>
+
+                        @if ($profile->diploma_number)
+                            <div><small>Диплом №{{ $profile->diploma_number }}, {{ $profile->diploma_year }} г., {{ $profile->diploma_institution }}</small></div>
+                        @endif
+
+                        @if ($profile->diploma_rejection_comment)
+                            <div class="alert alert-warning mt-1" style="font-size: 0.9em;">
+                                <strong>Предыдущий комментарий отклонения:</strong> {{ $profile->diploma_rejection_comment }}
+                            </div>
+                        @endif
                     </div>
 
                     <div class="verification-diploma">
-                        @php $ext = strtolower(pathinfo($profile->diploma_scan_url, PATHINFO_EXTENSION)); @endphp
-                        @if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']))
-                            <a href="{{ $profile->diploma_scan_url }}" target="_blank">
-                                <img src="{{ $profile->diploma_scan_url }}" alt="Диплом" class="diploma-preview">
-                            </a>
+                        @if ($profile->diploma_scan_url)
+                            @php $ext = strtolower(pathinfo($profile->diploma_scan_url, PATHINFO_EXTENSION)); @endphp
+                            @if (in_array($ext, ['jpg', 'jpeg', 'png']))
+                                <a href="{{ route('admin.verification.diploma', $profile) }}" target="_blank">
+                                    <img src="{{ route('admin.verification.diploma', $profile) }}" alt="Диплом" class="diploma-preview" style="max-width:200px;">
+                                </a>
+                            @else
+                                <a href="{{ route('admin.verification.diploma', $profile) }}" target="_blank" class="btn btn-outline">
+                                    Открыть PDF
+                                </a>
+                            @endif
                         @else
-                            <a href="{{ $profile->diploma_scan_url }}" target="_blank" class="btn btn-outline">
-                                Открыть PDF
-                            </a>
+                            <span class="text-muted">Скан не загружен</span>
                         @endif
                     </div>
 
@@ -45,14 +59,18 @@
                             <span class="badge badge-success">Верифицирован</span>
                         @else
                             <span class="badge badge-warning">Ожидает проверки</span>
+
                             <form action="{{ route('admin.verification.approve', $profile) }}" method="POST" style="display:inline;">
                                 @csrf
                                 <button type="submit" class="btn btn-primary btn-sm">Подтвердить</button>
                             </form>
-                            <form action="{{ route('admin.verification.reject', $profile) }}" method="POST" style="display:inline;">
+
+                            <form action="{{ route('admin.verification.reject', $profile) }}" method="POST"
+                                  class="reject-form" style="margin-top: 0.5rem;">
                                 @csrf
-                                <button type="submit" class="btn btn-outline btn-sm"
-                                        onclick="return confirm('Отклонить и удалить скан?')">Отклонить</button>
+                                <textarea name="comment" class="form-control" rows="2" placeholder="Причина отклонения (обязательно)" required
+                                          style="margin-bottom: 0.4rem; font-size: 0.9em;"></textarea>
+                                <button type="submit" class="btn btn-outline btn-sm">Отклонить</button>
                             </form>
                         @endif
                     </div>

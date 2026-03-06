@@ -38,6 +38,21 @@
             </div>
         </div>
 
+        @if ($methods->isNotEmpty())
+        <div class="form-group">
+            <label>Методы работы</label>
+            <div class="checkbox-group">
+                @foreach ($methods as $method)
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="methods[]" value="{{ $method->id }}"
+                               {{ $profile->methods->contains($method->id) ? 'checked' : '' }}>
+                        {{ $method->name }}
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         <div class="form-group">
             <label for="education">Образование</label>
             <textarea name="education" id="education" class="form-control" rows="3"
@@ -47,6 +62,39 @@
         <div class="form-group">
             <label for="experience_description">Опыт работы</label>
             <textarea name="experience_description" id="experience_description" class="form-control" rows="3">{{ old('experience_description', $profile->experience_description) }}</textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="work_format">Формат работы</label>
+                <select name="work_format" id="work_format" class="form-control" onchange="toggleCity()">
+                    <option value="online"  {{ old('work_format', $profile->work_format ?? 'online') === 'online'  ? 'selected' : '' }}>Онлайн</option>
+                    <option value="offline" {{ old('work_format', $profile->work_format) === 'offline' ? 'selected' : '' }}>Офлайн</option>
+                    <option value="both"    {{ old('work_format', $profile->work_format) === 'both'    ? 'selected' : '' }}>Онлайн и офлайн</option>
+                </select>
+            </div>
+            <div class="form-group" id="city-group" style="{{ in_array(old('work_format', $profile->work_format), ['offline', 'both']) ? '' : 'display:none;' }}">
+                <label for="city">Город</label>
+                <input type="text" name="city" id="city" class="form-control" placeholder="Москва"
+                       value="{{ old('city', $profile->city) }}">
+            </div>
+        </div>
+
+        @php
+            $availableLanguages = ['ru' => 'Русский', 'en' => 'Английский', 'de' => 'Немецкий', 'fr' => 'Французский', 'es' => 'Испанский'];
+            $selectedLanguages = old('languages', $profile->languages ?? []);
+        @endphp
+        <div class="form-group">
+            <label>Языки работы</label>
+            <div class="checkbox-group">
+                @foreach ($availableLanguages as $code => $label)
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="languages[]" value="{{ $code }}"
+                               {{ in_array($code, $selectedLanguages) ? 'checked' : '' }}>
+                        {{ $label }}
+                    </label>
+                @endforeach
+            </div>
         </div>
 
         <div class="form-row">
@@ -78,4 +126,11 @@
         </div>
     </form>
 </div>
+
+<script>
+function toggleCity() {
+    const fmt = document.getElementById('work_format').value;
+    document.getElementById('city-group').style.display = (fmt === 'offline' || fmt === 'both') ? '' : 'none';
+}
+</script>
 @endsection

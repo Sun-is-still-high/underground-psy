@@ -55,4 +55,24 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', "Пользователь {$user->name} разблокирован.");
     }
+
+    public function makeModerator(User $user): RedirectResponse
+    {
+        abort_unless($user->isPsychologist(), 422, 'Модератором может стать только психолог.');
+
+        $user->update(['role' => 'MODERATOR']);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Пользователь {$user->name} назначен модератором.");
+    }
+
+    public function removeModerator(User $user): RedirectResponse
+    {
+        abort_unless($user->isModerator(), 422, 'Пользователь не является модератором.');
+
+        $user->update(['role' => 'PSYCHOLOGIST']);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Роль модератора снята с {$user->name}.");
+    }
 }

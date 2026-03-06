@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -15,10 +16,14 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
         'is_blocked',
         'blocked_reason',
         'timezone',
         'gender',
+        'provider',
+        'provider_id',
+        'provider_token',
     ];
 
     protected $hidden = [
@@ -35,6 +40,16 @@ class User extends Authenticatable
         ];
     }
 
+    public function isPendingVerification(): bool
+    {
+        return $this->status === 'pending_verification';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
     public function isClient(): bool
     {
         return $this->role === 'CLIENT';
@@ -48,6 +63,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'ADMIN';
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->role === 'MODERATOR';
+    }
+
+    public function canModerate(): bool
+    {
+        return in_array($this->role, ['ADMIN', 'MODERATOR']);
     }
 
     public function psychologistProfile()
@@ -89,6 +114,16 @@ class User extends Authenticatable
     public function triadNotifications()
     {
         return $this->hasMany(TriadNotification::class);
+    }
+
+    /** Количество посещённых интервизий */
+    public function intervisionCount(): int
+    {
+        return \DB::table('intervision_attendance as ia')
+            ->join('intervision_participants as ip', 'ip.id', '=', 'ia.participant_id')
+            ->where('ip.psychologist_id', $this->id)
+            ->where('ia.attended', true)
+            ->count();
     }
 
     /** Счётчик троек по ролям (только completed + confirmed) */
