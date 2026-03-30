@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\CancelExpiredSlots;
+use App\Console\Commands\SyncIntervisionSessionStatuses;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command(CancelExpiredSlots::class)->everyFiveMinutes();
+        $schedule->command(SyncIntervisionSessionStatuses::class)->everyMinute()->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\IntervisionSessionStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class IntervisionSession extends Model
@@ -20,6 +21,11 @@ class IntervisionSession extends Model
     protected function casts(): array
     {
         return ['scheduled_at' => 'datetime'];
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return IntervisionSessionStatus::labelOf($this->status);
     }
 
     public function group()

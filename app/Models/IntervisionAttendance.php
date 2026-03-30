@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class IntervisionAttendance extends Model
 {
     public $timestamps = false;
+    protected $table = 'intervision_attendance';
 
     protected $fillable = ['session_id', 'participant_id', 'attended', 'marked_at', 'marked_by', 'notes'];
 

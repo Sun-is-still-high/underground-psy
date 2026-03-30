@@ -28,8 +28,8 @@
             @php $profile = $user->psychologistProfile; @endphp
             <div class="alert alert-warning">
                 <strong>Аккаунт ожидает проверки диплома.</strong>
-                Срок проверки — до 2 недель. Пока доступ к платформе ограничен.<br>
-                <small>Если проверка затягивается — напишите на <a href="mailto:support@underground-psy.ru">support@underground-psy.ru</a>.</small>
+                Срок проверки - до 2 недель. Пока доступ к платформе ограничен.<br>
+                <small>Если проверка затягивается - напишите на <a href="mailto:support@underground-psy.ru">support@underground-psy.ru</a>.</small>
 
                 @if ($profile && $profile->diploma_rejection_comment)
                     <hr>
@@ -86,7 +86,7 @@
                 <div class="action-cards">
                     <div class="action-card">
                         <h3>Создать запрос</h3>
-                        <p>Опишите проблему — психологи откликнутся</p>
+                        <p>Опишите проблему - психологи откликнутся</p>
                         <a href="{{ route('client.cases.create') }}" class="btn btn-primary">Создать запрос</a>
                     </div>
                     <div class="action-card">
@@ -128,7 +128,7 @@
                     <div class="action-card">
                         <h3>Мои интервизии</h3>
                         <p>Статус посещения и группы</p>
-                        <a href="{{ route('psychologist.intervisions') }}" class="btn btn-outline">Перейти</a>
+                        <a href="{{ route('psychologist.intervisions.groups') }}" class="btn btn-outline">Перейти</a>
                     </div>
                 </div>
             </div>

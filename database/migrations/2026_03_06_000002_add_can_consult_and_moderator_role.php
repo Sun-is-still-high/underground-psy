@@ -18,13 +18,16 @@ return new class extends Migration
 
         // Добавить MODERATOR к enum role в users
         // MySQL: ALTER TABLE ... MODIFY COLUMN
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('CLIENT','PSYCHOLOGIST','ADMIN','MODERATOR') NOT NULL DEFAULT 'CLIENT'");
+        $driver = DB::connection()->getDriverName();
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('CLIENT','PSYCHOLOGIST','ADMIN','MODERATOR') NOT NULL DEFAULT 'CLIENT'");
+        }
 
         // Засеять min_sessions в intervision_settings (если ещё нет)
         DB::table('intervision_settings')->insertOrIgnore([
-            'setting_key'   => 'min_sessions',
+            'setting_key' => 'min_sessions',
             'setting_value' => '3',
-            'description'   => 'Минимальное количество интервизий за 30 дней для допуска к консультациям',
+            'description' => 'Минимальное количество интервизий за 30 дней для допуска к консультациям',
         ]);
     }
 
@@ -34,7 +37,10 @@ return new class extends Migration
             $table->dropColumn('can_consult');
         });
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('CLIENT','PSYCHOLOGIST','ADMIN') NOT NULL DEFAULT 'CLIENT'");
+        $driver = DB::connection()->getDriverName();
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE users MODIFY COLUMN role ENUM('CLIENT','PSYCHOLOGIST','ADMIN') NOT NULL DEFAULT 'CLIENT'");
+        }
 
         DB::table('intervision_settings')->where('setting_key', 'min_sessions')->delete();
     }

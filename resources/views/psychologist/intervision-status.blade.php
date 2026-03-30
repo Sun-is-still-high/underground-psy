@@ -1,4 +1,4 @@
-@extends('layouts.main')
+﻿@extends('layouts.main')
 
 @section('title', 'Мои интервизии — Underground Psy')
 
@@ -6,13 +6,16 @@
 <div class="container">
     <div class="page-header">
         <h1>Мои интервизии</h1>
-        <a href="{{ route('dashboard') }}" class="btn btn-outline">Назад в кабинет</a>
+        <div style="display:flex; gap: 0.5rem;">
+            <a href="{{ route('psychologist.intervisions.groups') }}" class="btn btn-primary">Группы</a>
+            <a href="{{ route('dashboard') }}" class="btn btn-outline">Назад в кабинет</a>
+        </div>
     </div>
 
     @if (!$status['in_group'])
         <div class="warning-box">
             <strong>Вы не состоите ни в одной группе интервизий.</strong>
-            Обратитесь к администратору для добавления в группу.
+            Перейдите в раздел групп, чтобы вступить в подходящую группу.
         </div>
     @else
         <div class="status-card {{ $status['can_consult'] ? 'status-ok' : 'status-warning' }}">
@@ -24,10 +27,10 @@
                 <div class="status-icon status-icon-warning">!</div>
                 <h2>Требуется посещение интервизий</h2>
                 <p>Для права консультировать посетите ещё
-                    <strong>{{ $status['required_sessions'] - $status['monthly_sessions'] }}</strong>
+                    <strong>{{ max(0, $status['required_sessions'] - $status['monthly_sessions']) }}</strong>
                     {{ match(true) {
-                        ($status['required_sessions'] - $status['monthly_sessions']) === 1 => 'сессию',
-                        ($status['required_sessions'] - $status['monthly_sessions']) < 5 => 'сессии',
+                        max(0, $status['required_sessions'] - $status['monthly_sessions']) === 1 => 'сессию',
+                        max(0, $status['required_sessions'] - $status['monthly_sessions']) < 5 => 'сессии',
                         default => 'сессий'
                     } }}
                     в этом месяце.
@@ -54,6 +57,36 @@
                     <p>{{ $status['group']->description }}</p>
                 @endif
             </div>
+        </div>
+
+        <div class="section">
+            <h2>Ближайшие сессии</h2>
+            @if ($status['upcoming_sessions']->isEmpty())
+                <div class="group-card">
+                    <p>Нет запланированных сессий.</p>
+                </div>
+            @else
+                <div class="group-card">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left; padding: 0.5rem;">Дата</th>
+                                <th style="text-align:left; padding: 0.5rem;">Тема</th>
+                                <th style="text-align:left; padding: 0.5rem;">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($status['upcoming_sessions'] as $session)
+                                <tr>
+                                    <td style="padding: 0.5rem; border-top: 1px solid #e9ecef;">{{ $session->scheduled_at->format('d.m.Y H:i') }}</td>
+                                    <td style="padding: 0.5rem; border-top: 1px solid #e9ecef;">{{ $session->topic }}</td>
+                                    <td style="padding: 0.5rem; border-top: 1px solid #e9ecef;">{{ $session->status_label }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
     @endif
 </div>

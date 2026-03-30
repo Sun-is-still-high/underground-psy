@@ -11,14 +11,14 @@ class EnsureAccountActive
 {
     /**
      * Блокирует доступ психологам со статусом pending_verification.
-     * Клиентам и администраторам — пропускает всегда.
+     * Клиентам и администраторам - пропускает всегда.
      */
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
 
         if ($user && $user->isPsychologist() && $user->isPendingVerification()) {
-            // Разрешаем только dashboard, logout, email-верификацию и повторную загрузку диплома
+            // Разрешаем только dashboard, logout, email-верификацию и повторную загрузку диплома.
             $allowedRoutes = [
                 'dashboard',
                 'logout',

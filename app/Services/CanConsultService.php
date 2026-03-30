@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\PsychologistProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 

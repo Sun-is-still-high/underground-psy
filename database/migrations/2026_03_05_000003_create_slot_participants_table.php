@@ -22,7 +22,7 @@ return new class extends Migration
             $table->index('slot_id');
             $table->index('user_id');
 
-            // Нельзя записаться на слот дважды (один активный участник на слот)
+            // Нельзя записаться на слот дважды (один активный участник на слот).
             // Уникальность по role и user реализуется на уровне приложения
             // с pessimistic lock, т.к. MySQL не поддерживает partial unique index нативно.
         });

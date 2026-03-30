@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IntervisionAttendance;
 use App\Models\IntervisionParticipant;
 use App\Models\IntervisionSession;
+use App\Models\User;
 use App\Services\CanConsultService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -25,10 +24,12 @@ class DashboardController extends Controller
             }
 
             $service = new CanConsultService();
+            $attended = $service->attendedLast30Days($user);
+            $required = $service->minSessions();
             $canConsultInfo = [
-                'attended'    => $service->attendedLast30Days($user),
-                'required'    => $service->minSessions(),
-                'can_consult' => $profile?->can_consult ?? false,
+                'attended' => $attended,
+                'required' => $required,
+                'can_consult' => $attended >= $required,
             ];
         }
 
@@ -45,34 +46,46 @@ class DashboardController extends Controller
 
     private function getPsychologistIntervisionStatus(int $userId): array
     {
+        $user = User::with('psychologistProfile')->findOrFail($userId);
+        $service = new CanConsultService();
+
         $participant = IntervisionParticipant::where('psychologist_id', $userId)
             ->where('is_active', true)
-            ->with('group.sessions')
+            ->with('group')
             ->first();
 
+        $attended = $service->attendedLast30Days($user);
+        $required = $service->minSessions();
+        $canConsult = $attended >= $required;
+
         if (!$participant) {
-            return ['in_group' => false, 'group' => null, 'monthly_sessions' => 0, 'required_sessions' => 2, 'can_consult' => false];
+            return [
+                'in_group' => false,
+                'group' => null,
+                // Оставляем ключ для совместимости с текущим шаблоном.
+                'monthly_sessions' => $attended,
+                'required_sessions' => $required,
+                'can_consult' => $canConsult,
+                'upcoming_sessions' => collect(),
+            ];
         }
 
-        $minSessions = (int) DB::table('intervision_settings')
-            ->where('setting_key', 'min_monthly_sessions')
-            ->value('setting_value') ?? 2;
-
-        $monthStart = now()->startOfMonth();
-        $attended = IntervisionAttendance::whereHas('session', function ($q) use ($participant, $monthStart) {
-            $q->where('group_id', $participant->group_id)
-              ->where('scheduled_at', '>=', $monthStart)
-              ->where('status', 'COMPLETED');
-        })->where('participant_id', $participant->id)
-          ->where('attended', true)
-          ->count();
+        $upcomingSessions = IntervisionSession::query()
+            ->where('group_id', $participant->group_id)
+            ->whereIn('status', ['SCHEDULED', 'IN_PROGRESS'])
+            ->where('scheduled_at', '>=', now()->subMinutes(30))
+            ->orderBy('scheduled_at')
+            ->limit(10)
+            ->get();
 
         return [
             'in_group' => true,
             'group' => $participant->group,
+            // Оставляем ключ для совместимости с текущим шаблоном.
             'monthly_sessions' => $attended,
-            'required_sessions' => $minSessions,
-            'can_consult' => $attended >= $minSessions,
+            'required_sessions' => $required,
+            'can_consult' => $canConsult,
+            'upcoming_sessions' => $upcomingSessions,
         ];
     }
 }
